@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GaimControl Platform Demos</title>
+<meta name="description" content="Clickable walkthroughs of the GaimControl platform from the member, credit union and therapist side.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#0A1430;--surface:#112048;--line:#25386B;--text:#ECF1FB;--muted:#A6B2D0;--faint:#7787AD;--gold:#FBC21B;--teal:#22D8B3;--violet:#B3A7FF;--toivo:#7B61FF;--font:Aptos,"Figtree","Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);background-image:radial-gradient(1000px 520px at 15% -10%,#1A3070 0%,rgba(10,20,48,0) 62%);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;min-height:100vh}
+.wrap{max-width:1080px;margin:0 auto;padding:48px 20px 40px}
+.gc{font-weight:800;font-size:18px}.gc b{color:var(--gold)}
+h1{font-size:clamp(28px,4.5vw,44px);line-height:1.1;letter-spacing:-.02em;margin:28px 0 12px;max-width:20ch;text-wrap:balance}
+.lead{color:var(--muted);max-width:62ch;margin:0}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:36px}
+a.card{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;transition:transform .15s,border-color .15s}
+a.card:hover,a.card:focus-visible{transform:translateY(-2px);border-color:var(--c);outline:none}
+.k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--c)}
+a.card h2{margin:0;font-size:21px}
+a.card p{margin:0;color:var(--muted);font-size:14px}
+a.card ol{margin:4px 0 0;padding-left:18px;color:var(--text);font-size:13.5px;display:grid;gap:3px}
+a.card .go{margin-top:auto;padding-top:10px;font-weight:700;color:var(--c)}
+.foot{color:var(--faint);font-size:12.5px;margin-top:36px;max-width:70ch}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){a.card{transition:none}}
+</style></head><body><div class="wrap">
+<div class="gc">Gaim<b>Control</b></div>
+<h1>One journey, seen from three sides</h1>
+<p class="lead">A member whose loan is deferred for gambling risk completes a 30-day GaimControl programme, then returns to the lender. Each demo is a guided, clickable walkthrough of one side of that journey.</p>
+<div class="grid">
+<a class="card" href="member.html" style="--c:#A592FF"><span class="k">Member · Toivo app</span><h2>The member</h2><p>From the lender's email to completion.</p><ol><li>Deferral email and consent</li><li>ID, credit check and open banking</li><li>Self-exclusion by AI agents</li><li>Toivo card and sponsor</li><li>30 days of tracked progress</li><li>Return to the lender</li></ol><span class="go">Open the member demo →</span></a>
+<a class="card" href="credit-union.html" style="--c:#FBC21B"><span class="k">Credit union portal</span><h2>The lender</h2><p>From risk detected to the member's return.</p><ol><li>Gambling risk detected</li><li>Defer and refer, case created</li><li>Portfolio tracking</li><li>Member drill-down</li><li>Call back and completion</li></ol><span class="go">Open the credit union demo →</span></a>
+<a class="card" href="therapist.html" style="--c:#B3A7FF"><span class="k">Clinician portal</span><h2>The therapist</h2><p>From referral to sign-off.</p><ol><li>Referral from GaimControl</li><li>Customised treatment plan</li><li>Sessions and exercises in the app</li><li>Curriculum completed and sign-off</li></ol><span class="go">Open the therapist demo →</span></a>
+</div>
+<p class="foot">Demo with fictional people, organisations and figures. Completion criteria and clinical content are drafts for discussion.</p>
+</div></body></html>

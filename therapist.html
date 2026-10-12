@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>GaimControl Clinician Portal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: sticky step sidebar + one portal screen per step. Single dark GaimControl look: navy, violet accent for the clinician, teal for progress. */
+:root{
+  color-scheme: dark;
+  --bg:#0A1430; --surface:#112048; --surface-2:#172957; --raise:#1E3268; --line:#25386B; --line-2:#334A82;
+  --text:#ECF1FB; --muted:#A6B2D0; --faint:#7787AD;
+  --accent:#B3A7FF; --accent-ink:#160F3D; --teal:#22D8B3; --violet:#B3A7FF;
+  --ok:#3DDC97; --warn:#FFB454; --bad:#FF7272;
+  --font: Aptos, "Figtree", "Segoe UI", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.45}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{margin:0;text-wrap:balance;line-height:1.2}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+.side{background:#081128;border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:18px}
+.gc{font-weight:800;font-size:16px;padding:0 8px}
+.gc b{color:var(--accent)}
+.org{padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.org b{display:block}
+.org span{font-size:12px;color:var(--muted)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.steps button{width:100%;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:center;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:10px;color:var(--muted);font-weight:600}
+.steps button:hover{background:var(--surface)}
+.steps .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center;font-size:11.5px;font-weight:700}
+.steps button[aria-current="true"]{background:var(--surface-2);color:var(--text)}
+.steps button[aria-current="true"] .n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.steps button.done .n{border-color:var(--ok);color:var(--ok)}
+.side .foot{margin-top:auto;font-size:11.5px;color:var(--faint);padding:0 8px}
+.lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:700}
+main{padding:22px 28px 40px;min-width:0}
+.mh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.mh .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.mh h1{font-size:26px;margin-top:4px;letter-spacing:-.01em}
+.mh p{color:var(--muted);margin-top:6px;max-width:70ch}
+.navb{display:flex;gap:8px}
+.btn{border:1px solid var(--line-2);background:var(--surface-2);padding:8px 14px;border-radius:9px;font-weight:600;font-size:13px;white-space:nowrap}
+.btn:hover{background:var(--raise)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.teal{background:var(--teal);border-color:var(--teal);color:#032019}
+.btn.danger{background:transparent;border-color:rgba(255,114,114,.5);color:var(--bad)}
+.btn.ghost{background:transparent}
+.btn.lg{padding:12px 18px;font-size:14px;border-radius:11px}
+.grid{display:grid;gap:16px}
+.g2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;align-items:start}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.card h3{font-size:15px}
+.card .sub{color:var(--muted);font-size:13px;margin-top:3px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid transparent;white-space:nowrap}
+.p-ok{background:rgba(61,220,151,.13);color:var(--ok);border-color:rgba(61,220,151,.3)}
+.p-warn{background:rgba(255,180,84,.13);color:var(--warn);border-color:rgba(255,180,84,.3)}
+.p-bad{background:rgba(255,114,114,.13);color:var(--bad);border-color:rgba(255,114,114,.3)}
+.p-acc{background:rgba(179,167,255,.13);color:var(--accent);border-color:rgba(179,167,255,.35)}
+.p-teal{background:rgba(34,216,179,.12);color:var(--teal);border-color:rgba(34,216,179,.3)}
+.p-muted{background:var(--surface-2);color:var(--muted);border-color:var(--line-2)}
+.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.tile .v{font-size:24px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
+.tile .m{font-size:12px;color:var(--muted)}
+.bar{height:7px;border-radius:99px;background:var(--bg);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--teal)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:9px 16px;font-size:13px;margin:0}
+.kv dt{color:var(--faint)}
+.kv dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+tr.click{cursor:pointer}
+tr.click:hover td{background:rgba(255,255,255,.03)}
+tr.live td{background:rgba(179,167,255,.06)}
+.who{font-weight:700}
+.muted{color:var(--muted)}
+.faint{color:var(--faint)}
+.risk{border-color:rgba(255,114,114,.45);background:linear-gradient(180deg,rgba(255,114,114,.08),rgba(255,114,114,0) 60%),var(--surface)}
+.sig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.sig div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.sig b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.sig span{font-size:12px;color:var(--muted)}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--faint);font-size:11px;font-family:var(--font)}
+.decide{display:grid;gap:10px}
+.dopt{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;text-align:left;border:1.5px solid var(--line);background:var(--surface-2);border-radius:12px;padding:14px;width:100%}
+.dopt b{font-size:14.5px}
+.dopt span{font-size:12.5px;color:var(--muted);grid-column:1/2}
+.dopt.rec{border-color:var(--accent);background:rgba(179,167,255,.07)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
+.check:first-of-type{border-top:0}
+.check input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.field{display:grid;gap:5px}
+.field label{font-size:12px;color:var(--muted);font-weight:600}
+.field select,.field input{background:var(--bg);border:1px solid var(--line-2);border-radius:9px;padding:9px 11px;color:var(--text);font:inherit}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:20px 1fr auto;gap:10px;padding:8px 0;position:relative}
+.tl li::before{content:"";position:absolute;left:8.5px;top:26px;bottom:-6px;width:1.5px;background:var(--line-2)}
+.tl li:last-child::before{display:none}
+.tl .c{width:18px;height:18px;border-radius:50%;background:var(--ok);color:#03241A;display:grid;place-items:center;font-size:10px;font-weight:800;position:relative;z-index:1}
+.tl .c.o{background:var(--surface);border:1.5px solid var(--line-2);color:var(--faint)}
+.tl .dt{font-size:12px;color:var(--faint);white-space:nowrap}
+.success{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:16px;border-radius:12px;background:rgba(61,220,151,.08);border:1px solid rgba(61,220,151,.35)}
+.success .ic{width:40px;height:40px;border-radius:50%;background:var(--ok);color:#03241A;display:grid;place-items:center;font-weight:800;flex:none}
+.funnel{display:grid;gap:9px}
+.funnel .r{display:grid;grid-template-columns:150px 1fr 40px;gap:12px;align-items:center;font-size:13px}
+.funnel .t{height:22px;border-radius:6px;background:var(--bg);overflow:hidden}
+.funnel .t i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#1A9CD8);border-radius:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line-2);background:transparent;border-radius:99px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--surface-2);color:var(--text);border-color:var(--accent)}
+.wsc{display:grid;gap:8px}
+.wsc .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.wsc .v{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.wsc .v small{font-size:13px;color:var(--muted);font-weight:600}
+.privacy{display:flex;gap:10px;background:var(--bg);border:1px dashed var(--line-2);border-radius:12px;padding:12px;color:var(--muted);font-size:12.5px}
+.notif{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.notif:first-child{border-top:0}
+.notif .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:var(--accent-ink)}
+.notif b{display:block}
+.notif span{font-size:12.5px;color:var(--muted)}
+.notif.sel{background:rgba(179,167,255,.05);margin:0 -18px;padding-inline:18px}
+.cert{border:1px solid rgba(179,167,255,.5);border-radius:14px;padding:22px;background:linear-gradient(180deg,rgba(179,167,255,.06),rgba(179,167,255,0) 40%),var(--surface)}
+.cert h3{font-size:20px}
+.crit{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
+.crit:first-child{border-top:0}
+.crit i{width:20px;height:20px;border-radius:50%;background:var(--ok);color:#03241A;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800}
+.crit .faint{font-size:12.5px}
+.sign{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.sign div{border-top:1px solid var(--line-2);padding-top:8px;font-size:12.5px;color:var(--muted)}
+.sign b{display:block;color:var(--text);font-size:13.5px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--raise);border:1px solid var(--line-2);padding:10px 16px;border-radius:12px;z-index:60;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:calc(100vw - 32px)}
+@media (max-width:1200px){ .tiles{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:980px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{min-width:0}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .steps{display:flex;overflow-x:auto;gap:4px}
+  .steps li{flex:none}
+  .steps button{white-space:nowrap}
+  .side .foot{display:none}
+  .g2,.g3{grid-template-columns:1fr!important}
+  .kv{grid-template-columns:auto 1fr!important}
+  .notif{grid-template-columns:40px minmax(0,1fr)}
+  .notif>:last-child{grid-column:2;justify-self:start}
+  .success .btn{margin-left:0!important}
+  td{white-space:normal}
+}
+@media (max-width:560px){
+  main{padding:18px 16px 32px}
+  .side{padding:16px}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sig{grid-template-columns:1fr 1fr}
+  .funnel .r{grid-template-columns:110px 1fr 32px}
+  .sign{grid-template-columns:1fr}
+}
+</style>
+<style>
+.goal{border:1px solid var(--line-2);background:transparent;border-radius:99px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.goal[aria-pressed="true"]{background:rgba(179,167,255,.14);border-color:var(--accent);color:var(--text)}
+.rx{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.rx:first-of-type{border-top:0}
+.rx b{display:block;font-size:13.5px}
+.rx span.s{font-size:12.5px;color:var(--muted)}
+.sw{width:40px;height:23px;border-radius:99px;background:var(--line-2);position:relative;border:0;flex:none}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .15s}
+.sw[aria-checked="true"]{background:var(--accent)}
+.sw[aria-checked="true"]::after{left:20px}
+.mod{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.mod:first-child{border-top:0}
+.mod .k{width:26px;height:26px;border-radius:8px;background:var(--surface-2);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--accent)}
+.mod.done .k{background:var(--ok);color:#03241A}
+textarea{background:var(--bg);border:1px solid var(--line-2);border-radius:9px;padding:10px 12px;color:var(--text);font:inherit;width:100%;resize:vertical}
+.alert{display:grid;grid-template-columns:10px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-top:1px solid var(--line);font-size:13px}
+.alert:first-child{border-top:0}
+.alert .d{width:9px;height:9px;border-radius:50%;margin-top:5px}
+.quote{border-left:3px solid var(--accent);padding:4px 0 4px 12px;color:var(--text);font-size:13px;margin-top:8px}
+.inbox button{display:grid;grid-template-columns:1fr auto;gap:2px 8px;text-align:left;border:1px solid transparent;background:transparent;border-radius:10px;padding:11px;width:100%}
+.inbox button:hover{background:var(--surface-2)}
+.inbox button[aria-current="true"]{background:var(--surface-2);border-color:var(--accent)}
+.inbox .mt{grid-column:1/-1;font-size:12px;color:var(--muted)}
+</style>
+</head><body style="margin:0"><a href="./" style="position:fixed;right:16px;bottom:16px;z-index:70;background:#1E3268;color:#ECF1FB;border:1px solid #334A82;border-radius:99px;padding:8px 14px;font:600 13px Aptos,Figtree,system-ui,sans-serif;text-decoration:none">All demos</a><div id="app"></div>
+<script>
+(function(){
+const STEPS=[
+ {t:'Referral from GaimControl',h:'New referral',p:'GaimControl refers Daniel with everything gathered at onboarding: consents, ID, open banking summary, self-exclusion status, sponsor and a self-completed pre-screen.'},
+ {t:'Customised treatment plan',h:'Treatment plan · Daniel Price',p:'Build a 30-day plan from the assessment: goals, sessions, the digital prescription and the CBT curriculum. Publishing it sets up Daniel’s app.'},
+ {t:'Sessions and exercises',h:'Activity · day 12 of 30',p:'Everything Daniel does in the app is logged here: sessions, brain training scores, check-ins and alerts from card and open banking monitoring.'},
+ {t:'Curriculum and sign-off',h:'Curriculum and sign-off · day 30',p:'Daniel has worked through the CBT curriculum. Check the completion criteria and confirm the intervention is complete.'}
+];
+const MODS=['Understanding your gambling','Triggers and high-risk times','The gambler’s fallacy','Near misses and the illusion of control','Chasing losses','Urge surfing','Money and payday planning','Relationships and honesty','Boredom and filling time','Lapse or relapse?','Values and goals','Your relapse prevention plan'];
+const S={step:0, inbox:'dp', accepted:false, goals:['Stop gambling completely','Clear my debts','Rebuild trust with Laura'], rx:{gng:true,aat:true,delay:true,surf:true,chk:true,joint:true,alerts:true}, mods:MODS.map(()=>true), published:false, signed:false, aftercare:true, toast:null};
+function rnd(seed){let t=(seed+0x6D2B79F5)|0;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function pill(c,t){return `<span class="pill ${c}">${t}</span>`;}
+function bar(p,c){return `<div class="bar"><i style="width:${Math.max(0,Math.min(100,p))}%;${c?'background:'+c:''}"></i></div>`;}
+function dlabel(d){const x=new Date(2026,8,30);x.setDate(x.getDate()+d);return x.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+function line(pts,o){
+  const W=520,H=150,L=44,R=54,T=12,B=24,x0=pts[0].x,x1=pts[pts.length-1].x,col=o.color;
+  const sx=x=>L+(x-x0)/((x1-x0)||1)*(W-L-R), sy=y=>T+(1-(y-o.min)/(o.max-o.min))*(H-T-B);
+  const d=pts.map((p,i)=>(i?'L':'M')+sx(p.x).toFixed(1)+' '+sy(p.y).toFixed(1)).join(' ');
+  let g='';[o.min,(o.min+o.max)/2,o.max].forEach(v=>{g+=`<line x1="${L}" x2="${W-R}" y1="${sy(v)}" y2="${sy(v)}" stroke="#25386B"/><text x="${L-8}" y="${sy(v)+4}" text-anchor="end">${o.f(v)}</text>`;});
+  const lp=pts[pts.length-1];
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label)}">${g}<path d="${d} L${sx(x1)} ${H-B} L${sx(x0)} ${H-B} Z" fill="${col}" fill-opacity=".12"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round"/><circle cx="${sx(lp.x)}" cy="${sy(lp.y)}" r="4.5" fill="${col}"/><text x="${sx(lp.x)+8}" y="${sy(lp.y)+4}" style="fill:#ECF1FB;font-weight:700">${o.f(lp.y)}</text><text x="${L}" y="${H-6}">${dlabel(x0)}</text><text x="${W-R}" y="${H-6}" text-anchor="end">${dlabel(x1)}</text></svg>`;
+}
+function bars(vals,o){
+  const W=520,H=140,L=30,R=8,T=10,B=24,n=vals.length,bw=(W-L-R)/n;let s='';
+  [0,5,10].forEach(v=>{const y=T+(1-v/10)*(H-T-B);s+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="#25386B"/><text x="${L-6}" y="${y+4}" text-anchor="end">${v}</text>`;});
+  vals.forEach((v,i)=>{if(v==null)return;const h=v/10*(H-T-B);s+=`<rect x="${(L+i*bw+bw*.2).toFixed(1)}" y="${(H-B-h).toFixed(1)}" width="${(bw*.6).toFixed(1)}" height="${Math.max(1,h).toFixed(1)}" rx="2" fill="${v>=7?'#FBC21B':'#B3A7FF'}"/>`;});
+  s+=`<text x="${L}" y="${H-6}">${dlabel(1)}</text><text x="${W-R}" y="${H-6}" text-anchor="end">${dlabel(n)}</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label)}">${s}</svg>`;
+}
+const DAYS=[...Array(12)].map((_,i)=>i+1);
+const ACC=DAYS.filter(d=>d!==6).map(d=>({x:d,y:Math.round((0.68+0.18*(1-Math.exp(-d/8))+(rnd(d*7)-.5)*.05)*100)}));
+const RT=DAYS.filter(d=>d!==6).map(d=>({x:d,y:Math.round(548-70*(1-Math.exp(-d/8))+(rnd(d*9)-.5)*36)}));
+const URGE=DAYS.map(d=>d===10?8:Math.max(1,Math.round(6.2-3*(1-Math.exp(-d/9))+(rnd(d*13)-.5)*2.4)));
+
+function s0(){
+  const it=(id,n,m,p)=>`<button aria-current="${S.inbox===id}" data-act="${id==='dp'?'inbox:dp':'toast:Sample referral. Open Daniel Price for the walkthrough.'}"><b>${n}</b>${p}<span class="mt">${m}</span></button>`;
+  const right = S.accepted ? `<div class="success" style="margin-bottom:16px"><span class="ic">✓</span><div><b>Referral accepted</b><div class="muted" style="font-size:13px">Assessment booked: Thu 1 Oct, 18:30, video. Daniel has been notified in Toivo.</div></div><button class="btn primary" style="margin-left:auto" data-act="go:1">Build treatment plan →</button></div>`:'';
+  return `<div class="g2" style="grid-template-columns:270px minmax(0,1fr)">
+   <div class="card" style="padding:10px"><div class="lbl" style="padding:6px 10px">Referrals · 3</div><div class="inbox">
+    ${it('dp','Daniel Price','Today · via Northbank CU',S.accepted?pill('p-ok','Accepted'):pill('p-acc','New'))}
+    ${it('ah','Amir H.','Yesterday · via Eastfield CU',pill('p-muted','Accepted'))}
+    ${it('kb','Kerry B.','Mon · via Northbank CU',pill('p-muted','Accepted'))}</div></div>
+   <div>${right}<div class="card"><div class="hd"><div><span class="lbl">Referral GC-1047 · 30 Sep</span><h3 style="font-size:20px;margin-top:4px">Daniel Price, 34</h3><p class="sub">Referred by GaimControl for Northbank Credit Union (£3,000 loan deferred)</p></div>${pill('p-bad','PGSI 14 · problem gambling')}</div>
+    <div class="g2" style="grid-template-columns:1fr 1fr">
+     <div class="grid" style="gap:14px"><div><div class="lbl" style="margin-bottom:8px">Onboarding</div>
+      ${[['Consent to share with therapist','30 Sep'],['Identity verified','30 Sep'],['Credit check and open banking','30 Sep'],['Self-exclusion by agents: 8 of 8','1 Oct'],['Toivo card, sponsor: Laura (partner)','in progress']].map(x=>`<div class="crit"><i>${x[1]==='in progress'?'…':'✓'}</i><span>${x[0]}</span><span class="faint">${x[1]}</span></div>`).join('')}</div>
+      <div><div class="lbl" style="margin-bottom:8px">Risk pattern</div><div class="chips">${['Late night (71% after 10pm)','Payday spikes','Chasing losses','Unlicensed operator','Football on TV'].map(t=>pill('p-warn',t)).join('')}</div></div></div>
+     <div class="grid" style="gap:14px"><div><div class="lbl" style="margin-bottom:8px">Open banking, last 90 days</div><dl class="kv"><dt>Gambling spend</dt><dd>£1,870</dd><dt>Share of net income</dt><dd>29%</dd><dt>Payments / operators</dt><dd>63 / 5</dd><dt>Largest week</dt><dd>£230</dd><dt>Debts</dt><dd>Credit card £2,640</dd></dl></div>
+      <div><div class="lbl" style="margin-bottom:6px">Pre-screen, self-completed</div><p class="muted" style="font-size:13px">PGSI 14. Wants to stop completely. Partner aware of debts, not full extent. No immediate safeguarding concerns flagged.</p><div class="quote">“I want to be able to look at my bank app without feeling sick.”</div></div></div></div>
+    ${S.accepted?'':`<div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap"><button class="btn primary lg" data-act="accept">Accept and book assessment</button><button class="btn ghost" data-act="toast:Declined referrals go back to GaimControl to reassign.">Decline</button></div>`}
+   </div></div></div>`;
+}
+function s1(){
+  const g=t=>`<button class="goal" aria-pressed="${S.goals.includes(t)}" data-act="goal:${t}">${t}</button>`;
+  const rx=(k,t,s,f)=>`<div class="rx"><button class="sw" role="switch" aria-checked="${S.rx[k]}" aria-label="${t}" data-act="rx:${k}"></button><div><b>${t}</b><span class="s">${s}</span></div><span class="faint" style="font-size:12.5px;white-space:nowrap">${S.rx[k]?f:'Off'}</span></div>`;
+  return `${S.published?`<div class="success" style="margin-bottom:16px"><span class="ic">✓</span><div><b>Plan published to Daniel’s app</b><div class="muted" style="font-size:13px">His daily prescription, sessions and lessons are live in Toivo.</div></div><button class="btn primary" style="margin-left:auto" data-act="go:2">See his activity →</button></div>`:''}
+  <div class="g2"><div class="grid">
+   <div class="card"><h3>Goals</h3><p class="sub" style="margin-bottom:12px">Agreed with Daniel at assessment, 1 Oct</p><div class="chips">${['Stop gambling completely','Clear my debts','Rebuild trust with Laura','Sleep before midnight','Get my loan approved'].map(g).join('')}</div>
+    <div class="field" style="margin-top:14px"><label for="form">Formulation</label><textarea id="form" rows="3">Gambling escalates late at night and after payday, driven by boredom and chasing losses. Strong motivation from debt and relationship. Good insight; low social support outside partner.</textarea></div></div>
+   <div class="card"><h3>Digital prescription</h3><p class="sub">Daily neuroscience training and tools in Toivo. About 10 minutes a day.</p>
+    ${rx('gng','Impulse control (Go/No-Go)','Trains holding back when gambling cues appear','Daily · 2 min')}
+    ${rx('aat','Cue retraining (approach–avoidance)','Pushing gambling images away, pulling neutral ones close','5× a week · 4 min')}
+    ${rx('delay','Delay of reward','Practises choosing later, bigger rewards','3× a week · 3 min')}
+    ${rx('surf','Urge surfing audio','Guided exercise for when urges peak','As needed')}
+    ${rx('chk','Urge check-ins','Strength, trigger and time','Twice daily, incl. 10pm')}</div>
+   <div class="card"><h3>Sponsor involvement</h3>${rx('joint','Joint session with Laura','Optional session 3 with Daniel’s sponsor','Session 3')}${rx('alerts','Share blocked-payment alerts with me','When the card or open banking detects gambling','On')}</div>
+  </div>
+  <div class="grid">
+   <div class="card"><h3>Therapy sessions</h3><p class="sub" style="margin-bottom:10px">4 × 50 min · video · Thursdays 18:30</p>
+    ${[['1','1 Oct','Assessment and formulation'],['2','8 Oct','Triggers and high-risk times'],['3','15 Oct','Chasing losses (with Laura)'],['4','22 Oct','Relapse prevention plan']].map(s=>`<div class="mod"><span class="k">${s[0]}</span><span>${s[2]}</span><span class="faint">${s[1]}</span></div>`).join('')}</div>
+   <div class="card"><div class="hd" style="margin-bottom:8px"><div><h3>CBT curriculum</h3><p class="sub">${S.mods.filter(Boolean).length} of 12 lessons assigned · about 6 min each</p></div></div>
+    ${MODS.map((m,i)=>`<label class="mod" style="cursor:pointer"><input type="checkbox" data-mod="${i}" ${S.mods[i]?'checked':''} style="accent-color:var(--accent);width:16px;height:16px"><span>${i+1}. ${m}</span><span class="faint">${i<4?'Week 1':i<7?'Week 2':i<10?'Week 3':'Week 4'}</span></label>`).join('')}</div>
+   ${S.published?'':`<button class="btn primary lg" data-act="publish">Publish plan to Daniel’s app</button>`}
+  </div></div>`;
+}
+function s2(){
+  const t=(l,v,m)=>`<div class="tile"><div class="lbl">${l}</div><div class="v">${v}</div><div class="m">${m}</div></div>`;
+  const ex=[['12 Oct','Impulse control','82% accuracy, 491 ms'],['12 Oct','Lesson 5: Chasing losses','Quiz 1/1, 7 min'],['11 Oct','Cue retraining','Avoidance bias +38 ms'],['11 Oct','Urge check-in','3/10, Boredom, 21:14'],['10 Oct','Urge surfing audio','Completed, 23:55'],['10 Oct','Urge check-in','8/10, Football on TV, 23:52'],['10 Oct','Delay of reward','Chose later reward 7/10']];
+  return `<div class="tiles" style="margin-bottom:16px">${t('Gambling-free','12 days','verified by open banking')}${t('Sessions','2 of 4','next Thu 15 Oct')}${t('Training','11 of 12','days with brain training')}${t('Lessons','4 of 12','on schedule')}${t('Check-ins','19','avg urge 4.1 / 10')}${t('Alerts','2','this week')}</div>
+  <div class="g2" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
+   <div class="card"><h3>Impulse control accuracy</h3><p class="sub">Go/No-Go, correct responses</p>${line(ACC,{min:50,max:100,f:v=>Math.round(v)+'%',color:'#22D8B3',label:'Go/No-Go accuracy by day'})}</div>
+   <div class="card"><h3>Reaction time</h3><p class="sub">Mean on correct taps</p>${line(RT,{min:400,max:600,f:v=>Math.round(v)+'ms',color:'#5AA9FF',label:'Reaction time by day'})}</div>
+   <div class="card"><h3>Peak urge by day</h3><p class="sub">From check-ins; 7+ in gold</p>${bars(URGE,{label:'Peak urge by day'})}</div>
+   <div class="card"><h3>Alerts</h3>
+    <div class="alert"><span class="d" style="background:var(--bad)"></span><div><b>Blocked payment: Royal Reels (unlicensed), £50</b><div class="muted" style="font-size:12.5px">Sat 10 Oct, 23:41 · Toivo card · Laura notified</div></div><button class="btn" data-act="toast:Opens a secure message to Daniel in Toivo.">Message</button></div>
+    <div class="alert"><span class="d" style="background:var(--accent)"></span><div><b>High urge: 8/10</b><div class="muted" style="font-size:12.5px">Sat 10 Oct, 23:52 · Football on TV · completed urge surfing</div></div><span></span></div>
+    <div class="alert"><span class="d" style="background:var(--ok)"></span><div><b>No gambling transactions since 30 Sep</b><div class="muted" style="font-size:12.5px">All 4 accounts checked today</div></div><span></span></div></div></div>
+  <div class="g2" style="grid-template-columns:1fr 1fr">
+   <div class="card"><h3>Sessions</h3><div class="tbl-wrap" style="margin-top:10px"><table><thead><tr><th>#</th><th>Date</th><th>Focus</th><th>Status</th></tr></thead><tbody>
+    <tr><td>1</td><td>1 Oct</td><td>Assessment and formulation</td><td>${pill('p-ok','Attended')}</td></tr>
+    <tr><td>2</td><td>8 Oct</td><td>Triggers and high-risk times</td><td>${pill('p-ok','Attended')}</td></tr>
+    <tr><td>3</td><td>15 Oct</td><td>Chasing losses (with Laura)</td><td>${pill('p-muted','Booked')}</td></tr>
+    <tr><td>4</td><td>22 Oct</td><td>Relapse prevention plan</td><td>${pill('p-muted','Booked')}</td></tr></tbody></table></div>
+    <div class="field" style="margin-top:12px"><label for="n2">Session 2 notes (private)</label><textarea id="n2" rows="2">Mapped triggers: weekend football, payday, late nights. Agreed phone out of bedroom after 11pm.</textarea></div></div>
+   <div class="card"><h3>Exercises completed in the app</h3><div class="tbl-wrap" style="margin-top:10px"><table><thead><tr><th>Date</th><th>Exercise</th><th>Result</th></tr></thead><tbody>${ex.map(e=>`<tr><td class="muted">${e[0]}</td><td>${e[1]}</td><td>${e[2]}</td></tr>`).join('')}</tbody></table></div></div></div>`;
+}
+function s3(){
+  const done=[3,4,5,6,8,10,11,13,15,18,22,26];
+  const scores=['8 min','6 min','7 min','9 min','7 min','5 min','8 min','6 min','6 min','7 min','8 min','11 min'];
+  const crit=[['All self-exclusions active','8 of 8 verified today'],['30 consecutive gambling-free days','Open banking and Toivo card'],['Therapy sessions attended','4 of 4'],['Digital prescription','Training on 27 of 30 days (target 20)'],['CBT curriculum','12 of 12 lessons'],['Sponsor and card in place','Active throughout']];
+  return `${S.signed?`<div class="success" style="margin-bottom:16px"><span class="ic">✓</span><div><b>Intervention confirmed complete</b><div class="muted" style="font-size:13px">GaimControl has issued the completion certificate to Northbank. Daniel can now reapply or ask for a call back.</div></div></div>`:''}
+  <div class="g2"><div class="card"><div class="hd"><div><h3>Therapeutic curriculum</h3><p class="sub">12 of 12 lessons completed</p></div>${pill('p-ok','Complete')}</div>
+   ${MODS.map((m,i)=>`<div class="mod done"><span class="k">✓</span><span>${i+1}. ${m}</span><span class="faint">${dlabel(done[i])} · ${scores[i]}</span></div>`).join('')}
+   <div class="lbl" style="margin:16px 0 4px">From Daniel’s reflections (private)</div>
+   <div class="quote">Lesson 5: “When I lose I feel like I have to fix it that night. Now I know that’s the chase talking.”</div>
+   <div class="quote">Lesson 12: “My plan: phone out of the bedroom, Laura sees the card, call Dr Okafor if it gets bad.”</div></div>
+  <div class="grid"><div class="card"><h3>Completion criteria</h3><p class="sub" style="margin-bottom:8px">Draft criteria for discussion</p>${crit.map(c=>`<div class="crit"><i>✓</i><span>${c[0]}</span><span class="faint">${c[1]}</span></div>`).join('')}</div>
+   <div class="card"><h3>Outcome measures</h3><dl class="kv" style="margin-top:10px"><dt>PGSI</dt><dd>14 → 5</dd><dt>Impulse control accuracy</dt><dd>68% → 91%</dd><dt>Average urge</dt><dd>6.1 → 2.4</dd><dt>Late-night check-ins</dt><dd>58% → 19%</dd></dl></div>
+   <div class="card"><h3>Sign-off</h3>
+    <div class="rx" style="border-top:0"><button class="sw" role="switch" aria-checked="${S.aftercare}" aria-label="Aftercare" data-act="after"></button><div><b>Monthly aftercare check-in</b><span class="s">For 3 months, in Toivo</span></div><span></span></div>
+    ${S.signed?pill('p-ok','Signed 30 Oct by Dr Sarah Okafor'):`<button class="btn primary lg" style="width:100%;margin-top:6px" data-act="sign">Confirm intervention complete</button><p class="faint" style="font-size:12px;margin-top:8px">Sends your sign-off to GaimControl, which issues the certificate to Northbank. Your notes are not shared.</p>`}</div></div></div>`;
+}
+const SCREENS=[s0,s1,s2,s3];
+function render(){
+  const st=STEPS[S.step];
+  document.getElementById('app').innerHTML=`<div class="app">
+   <aside class="side"><div class="gc">Gaim<b>Control</b></div><div class="org"><b>Dr Sarah Okafor</b><span>Clinician portal · specialist gambling therapist</span></div>
+    <div><div class="lbl" style="padding:0 8px 6px">Walkthrough</div><ol class="steps">${STEPS.map((x,i)=>`<li><button data-act="go:${i}" aria-current="${i===S.step}" class="${i<S.step?'done':''}"><span class="n">${i<S.step?'✓':i+1}</span><span>${x.t}</span></button></li>`).join('')}</ol></div>
+    <div class="foot">Demo with fictional people, organisations and figures.</div></aside>
+   <main><div class="mh"><div><span class="eyebrow">Therapist view · Step ${S.step+1} of ${STEPS.length}</span><h1>${st.h}</h1><p>${st.p}</p></div>
+    <div class="navb"><button class="btn" data-act="go:${S.step-1}" ${S.step===0?'disabled':''}>← Back</button><button class="btn primary" data-act="go:${S.step+1}" ${S.step===STEPS.length-1?'disabled':''}>Next →</button></div></div>
+    ${SCREENS[S.step]()}</main></div>
+   ${S.toast?`<div class="toast" role="status">${esc(S.toast)}</div>`:''}`;
+}
+let tt=null; function toast(t){S.toast=t;render();clearTimeout(tt);tt=setTimeout(()=>{S.toast=null;render();},2800);}
+function act(a){
+  const [k,x]=a.split(/:(.*)/s);
+  switch(k){
+   case 'go': S.step=Math.max(0,Math.min(STEPS.length-1,+x)); if(S.step>=1) S.accepted=true; if(S.step>=2) S.published=true; window.scrollTo({top:0,behavior:'smooth'}); break;
+   case 'inbox': S.inbox=x; break;
+   case 'accept': S.accepted=true; break;
+   case 'goal': { const i=S.goals.indexOf(x); if(i>=0) S.goals.splice(i,1); else S.goals.push(x); break; }
+   case 'rx': S.rx[x]=!S.rx[x]; break;
+   case 'publish': S.published=true; window.scrollTo({top:0,behavior:'smooth'}); break;
+   case 'after': S.aftercare=!S.aftercare; break;
+   case 'sign': S.signed=true; window.scrollTo({top:0,behavior:'smooth'}); break;
+   case 'toast': return toast(x);
+  }
+  render();
+}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]'); if(t) act(t.dataset.act);});
+document.addEventListener('change',e=>{const m=e.target.dataset&&e.target.dataset.mod; if(m!=null){S.mods[+m]=e.target.checked; render();}});
+render();
+})();
+</script>
+
+</body></html>

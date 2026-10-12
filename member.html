@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Toivo Member Journey</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: step list | phone | explainer. Single dark Toivo look (indigo, violet primary) matching the Toivo wireframes. */
+:root{
+  color-scheme: dark;
+  --bg:#0E0B26; --surface:#1E1948; --surface-2:#28225C; --raise:#322B6E; --line:#352E70; --line-2:#463D8C;
+  --text:#F2F0FF; --muted:#B7B1DD; --faint:#8A83BB;
+  --brand:#7B61FF; --brand-2:#A592FF; --ok:#3DDC97; --warn:#FFB454; --bad:#FF6B81; --gold:#FBC21B; --teal:#22D8B3;
+  --font: Aptos, "Figtree", "Segoe UI", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);background-image:radial-gradient(900px 520px at 75% -12%, #2B1F7A 0%, rgba(14,11,38,0) 62%);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.45}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.2}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.top{max-width:1300px;margin:0 auto;padding:18px 20px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top .gc{font-weight:800;font-size:16px}
+.top .gc b{color:var(--gold)}
+.top .role{font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line-2);border-radius:99px;padding:3px 9px;color:var(--muted)}
+.top .demo{margin-left:auto;font-size:12px;color:var(--faint)}
+.layout{display:grid;grid-template-columns:230px 400px minmax(0,1fr);gap:28px;max-width:1300px;margin:0 auto;padding:20px 20px 40px;align-items:start}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:2px;position:sticky;top:16px}
+.steps button{width:100%;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:center;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:10px;color:var(--muted);font-weight:600}
+.steps button:hover{background:var(--surface)}
+.steps .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center;font-size:11.5px;font-weight:700}
+.steps button[aria-current="true"]{background:var(--surface-2);color:var(--text)}
+.steps button[aria-current="true"] .n{background:var(--brand);border-color:var(--brand);color:#fff}
+.steps button.done .n{background:rgba(61,220,151,.15);border-color:var(--ok);color:var(--ok)}
+.steps .d{display:block;font-size:11px;color:var(--faint);font-weight:500}
+.phone{width:100%;max-width:390px;height:800px;border-radius:46px;background:#05040F;padding:11px;border:1px solid var(--line-2);box-shadow:0 30px 80px rgba(0,0,0,.5);margin:0 auto;position:sticky;top:16px}
+.screen{height:100%;border-radius:36px;overflow:hidden;background:linear-gradient(180deg,#1A1545 0%,#110D2E 100%);display:flex;flex-direction:column;position:relative}
+.sbar{display:flex;justify-content:space-between;padding:13px 26px 4px;font-size:12px;font-weight:700;flex:none}
+.pscroll{flex:1;overflow-y:auto;padding:8px 18px 22px;display:flex;flex-direction:column;gap:14px}
+.pnav{flex:none;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:#16123B;padding:8px 6px 16px}
+.pnav button{border:0;background:transparent;color:var(--faint);font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px}
+.pnav button[aria-current="true"]{color:var(--brand-2)}
+.pnav svg{width:20px;height:20px}
+.toivo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:18px;letter-spacing:.01em}
+.toivo svg{width:24px;height:24px}
+.ph-h{font-size:23px;font-weight:800;letter-spacing:-.01em}
+.ph-p{color:var(--muted);font-size:13.5px}
+.center{text-align:center}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+.lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:700}
+.btn{border:1px solid var(--line-2);background:var(--surface-2);padding:9px 14px;border-radius:10px;font-weight:600;font-size:13px}
+.btn:hover{background:var(--raise)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{background:#6A4FF5}
+.btn.block{width:100%;padding:14px;border-radius:14px;font-size:14.5px}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 10px;font-size:12px}
+.back{align-self:flex-start;border:0;background:transparent;color:var(--muted);padding:0;font-weight:600}
+.ill{display:grid;place-items:center;padding:6px 0}
+.ill svg{width:190px;height:150px}
+.dots{display:flex;gap:6px;justify-content:center}
+.dots i{width:6px;height:6px;border-radius:99px;background:var(--line-2)}
+.dots i.on{width:18px;background:var(--brand)}
+.field{display:grid;gap:5px}
+.field label{font-size:12px;color:var(--muted);font-weight:600}
+.field input{background:#15113A;border:1px solid var(--line-2);border-radius:12px;padding:11px 12px;color:var(--text);font:inherit;width:100%}
+.consent{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line);text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;width:100%}
+.consent:first-of-type{border-top:0}
+.consent .bx{width:22px;height:22px;border-radius:7px;border:2px solid var(--line-2);display:grid;place-items:center;flex:none;font-size:12px;margin-top:1px}
+.consent[aria-checked="true"] .bx{background:var(--brand);border-color:var(--brand);color:#fff}
+.consent b{display:block;font-size:13.5px}
+.consent span.s{font-size:12.5px;color:var(--muted)}
+.ws{display:grid;grid-template-columns:40px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.ws:first-child{border-top:0}
+.ws .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:#120E33;font-size:15px}
+.ws b{display:block}
+.ws span{font-size:12.5px;color:var(--muted)}
+.acct{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.acct i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-style:normal;font-weight:800;color:#0E0B26;flex:none}
+.acct b{display:block;font-size:13.5px}
+.acct span{font-size:12px;color:var(--muted)}
+.acct .r{margin-left:auto}
+.spinner{width:46px;height:46px;border-radius:50%;border:4px solid var(--line-2);border-top-color:var(--brand-2);animation:spin .9s linear infinite;margin:40px auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stat2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat2 .pcard .v{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat2 .pcard .m{font-size:11.5px;color:var(--muted)}
+.op{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+.op:first-child{border-top:0}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;white-space:nowrap;border:1px solid transparent}
+.p-ok{background:rgba(61,220,151,.14);color:var(--ok);border-color:rgba(61,220,151,.3)}
+.p-warn{background:rgba(255,180,84,.14);color:var(--warn);border-color:rgba(255,180,84,.3)}
+.p-bad{background:rgba(255,107,129,.14);color:var(--bad);border-color:rgba(255,107,129,.3)}
+.p-brand{background:rgba(123,97,255,.18);color:var(--brand-2);border-color:rgba(123,97,255,.4)}
+.p-muted{background:var(--surface-2);color:var(--muted);border-color:var(--line-2)}
+.agent{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.agent:first-child{border-top:0}
+.agent .st{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;border:2px solid var(--line-2)}
+.agent.done .st{background:var(--ok);border-color:var(--ok);color:#06261A}
+.agent.run .st{border-color:var(--brand-2);border-top-color:transparent;animation:spin .8s linear infinite}
+.agent.flag .st{background:var(--warn);border-color:var(--warn);color:#2B1A00}
+.agent b{display:block;font-size:13px}
+.agent span{font-size:11.5px;color:var(--muted)}
+.tcard{border-radius:18px;padding:18px;background:linear-gradient(135deg,#7B61FF 0%,#4B33C9 55%,#2A1E86 100%);box-shadow:0 14px 30px rgba(75,51,201,.35);display:grid;gap:22px;aspect-ratio:1.6/1;max-width:100%}
+.tcard .row{display:flex;justify-content:space-between;align-items:flex-start}
+.tcard .nm{font-weight:700;font-size:15px}
+.tcard .no{font-size:15px;letter-spacing:.12em;font-variant-numeric:tabular-nums}
+.tcard small{font-size:11px;opacity:.8}
+.ctl{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
+.ctl:first-of-type{border-top:0}
+.sw{width:40px;height:23px;border-radius:99px;background:var(--line-2);position:relative;flex:none}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .15s}
+.sw.on{background:var(--brand)}
+.sw.on::after{left:20px}
+.sw.lock{background:var(--bad)}
+.sw.lock::after{left:20px}
+.bar{height:7px;border-radius:99px;background:#15113A;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--brand-2)}
+.wrow{display:grid;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
+.wrow:first-child{border-top:0}
+.wrow .h{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.wrow .h b{font-weight:700}
+.wrow .h span{color:var(--muted);font-variant-numeric:tabular-nums}
+.task{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.task .bx{width:22px;height:22px;border-radius:7px;border:2px solid var(--line-2);display:grid;place-items:center;flex:none;font-size:12px}
+.task.done .bx{background:var(--ok);border-color:var(--ok);color:#06261A}
+.task b{display:block;font-size:13.5px}
+.task span{font-size:12px;color:var(--muted)}
+.task .go{margin-left:auto;color:var(--faint);font-size:18px}
+.tx{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.tx:first-child{border-top:0}
+.tx i{width:30px;height:30px;border-radius:9px;background:var(--surface-2);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;flex:none}
+.tx .a{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700}
+.ring{display:grid;place-items:center;position:relative}
+.ring svg{width:132px;height:132px}
+.ring .in{position:absolute;text-align:center}
+.ring .in b{font-size:30px;font-weight:800;display:block;line-height:1}
+.ring .in span{font-size:11px;color:var(--muted)}
+.gstage{height:220px;border-radius:18px;background:#120E33;border:1px solid var(--line-2);display:grid;place-items:center;touch-action:manipulation;user-select:none;-webkit-user-select:none;cursor:pointer;transition:background .12s}
+.gstage svg{width:116px;height:116px}
+.gstage.hit{background:rgba(61,220,151,.16)}
+.gstage.err{background:rgba(255,107,129,.2)}
+.gprog{height:6px;border-radius:99px;background:#120E33;overflow:hidden}
+.gprog i{display:block;height:100%;background:var(--brand-2);transition:width .2s}
+.legend{display:flex;gap:14px;justify-content:center}
+.legend svg{width:38px;height:38px}
+.opt{display:grid;gap:4px;text-align:left;padding:14px;border-radius:16px;background:var(--surface);border:1.5px solid var(--line);width:100%}
+.opt[aria-pressed="true"]{border-color:var(--brand);background:rgba(123,97,255,.12)}
+.opt b{font-size:14.5px}
+.opt span{font-size:12.5px;color:var(--muted)}
+.crit{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.crit:first-child{border-top:0}
+.crit i{width:20px;height:20px;border-radius:50%;background:var(--ok);color:#06261A;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800}
+.crit span{color:var(--muted);display:block;font-size:12px}
+.notes{position:sticky;top:16px;display:grid;gap:16px}
+.ncard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
+.ncard .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--brand-2)}
+.ncard h2{font-size:24px;margin-top:6px;letter-spacing:-.01em}
+.ncard p{color:var(--muted);margin-top:10px;max-width:60ch}
+.ncard ul{margin:14px 0 0;padding-left:18px;color:var(--text);display:grid;gap:6px;max-width:60ch}
+.ncard ul li::marker{color:var(--brand-2)}
+.sees{display:grid;gap:0;margin-top:16px}
+.sees div{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.sees div span:first-child{color:var(--faint);font-weight:600}
+.navrow{display:flex;gap:10px;justify-content:space-between;align-items:center}
+.navrow .pos{color:var(--faint);font-size:12.5px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--raise);border:1px solid var(--line-2);padding:10px 16px;border-radius:12px;z-index:60;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:calc(100vw - 32px)}
+footer{max-width:1300px;margin:0 auto;padding:0 20px 30px;color:var(--faint);font-size:12px}
+@media (max-width:1180px){
+  .layout{grid-template-columns:400px minmax(0,1fr)}
+  .steps{grid-column:1/-1;position:static;display:flex;overflow-x:auto;gap:4px;padding-bottom:4px}
+  .steps li{flex:none}
+  .steps button{white-space:nowrap}
+  .steps .d{display:none}
+}
+@media (max-width:820px){
+  .layout{grid-template-columns:1fr}
+  .phone,.notes{position:static}
+}
+@media (max-width:460px){
+  .layout{padding-inline:16px}
+  .phone{border-radius:0;padding:0;border:0;box-shadow:none;height:760px}
+  .screen{border-radius:20px;border:1px solid var(--line)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head><body style="margin:0"><a href="./" style="position:fixed;right:16px;bottom:16px;z-index:70;background:#1E3268;color:#ECF1FB;border:1px solid #334A82;border-radius:99px;padding:8px 14px;font:600 13px Aptos,Figtree,system-ui,sans-serif;text-decoration:none">All demos</a><div id="app"></div>
+
+<script>
+(function(){
+const LOGO='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><circle cx="9" cy="12" r="6.5"/><circle cx="15" cy="12" r="6.5"/></svg>';
+const STEPS=[
+ {id:'email', t:'Lender email', d:'Day 0'},
+ {id:'consent', t:'Consent and sign-up', d:'Day 0'},
+ {id:'idv', t:'Identity check', d:'Day 0'},
+ {id:'journey', t:'Your 30-day journey', d:'Day 0'},
+ {id:'data', t:'Credit check and open banking', d:'Day 0'},
+ {id:'exclusion', t:'Self-exclusion by agents', d:'Day 0–1'},
+ {id:'card', t:'Toivo card and sponsor', d:'Day 1–2'},
+ {id:'progress', t:'Days 1–30: progress', d:'Day 12 shown'},
+ {id:'complete', t:'Completion and return', d:'Day 30'}
+];
+const NOTES={
+ email:{h:'The lender defers, it doesn’t decline',p:'Northbank spotted gambling risk in Daniel’s application. Instead of a decline, they defer: they want to lend, on condition he completes the GaimControl programme first. His application stays open.',li:['Sent by the lender, so it’s expected and trusted','Framed as a route to a yes, not a judgement','One tap into the Toivo app'],see:['Referral and application reference','Referral and contact details']},
+ consent:{h:'Consent comes first',p:'Daniel agrees to the referral and chooses what is shared. The lender only ever sees programme progress. The therapist sees what they need to treat him.',li:['Account details pre-filled from the referral','Each consent is recorded with a timestamp','He can withdraw at any time'],see:['Consent given: yes/no','Profile and consents']},
+ idv:{h:'Identity verification',p:'A document scan and a selfie confirm it’s really Daniel. This protects the credit check, open banking and self-exclusion requests that follow, which must be made in his name.',li:['Photo ID plus liveness selfie','Takes about 2 minutes'],see:['ID verified: yes/no','ID verified: yes/no']},
+ journey:{h:'What the 30 days involve',p:'Four workstreams run side by side. Each one is tracked, and together they make up the evidence that the intervention is complete.',li:['Self-exclusion, done for him by AI agents','A specialist therapist','A daily digital prescription: neuroscience training and CBT lessons','The Toivo card, overseen by a sponsor he trusts'],see:['Nothing new','Nothing new']},
+ data:{h:'Credit check and open banking',p:'A soft credit search finds every account in Daniel’s name, so nothing is missed. Open banking then reads 90 days of transactions to find every gambling operator he has used, including unlicensed ones.',li:['Soft search: no effect on his credit score','Read-only; we can’t move money','Monitoring continues for the 30 days and confirms gambling-free days'],see:['Nothing (transactions stay private)','Spending summary and operator list']},
+ exclusion:{h:'Self-exclusion, done by agents',p:'Self-excluding from every operator one by one is hard, and it’s where people give up. With one authorisation, GaimControl agents do it for Daniel and check each one is active.',li:['GAMSTOP for UK-licensed online operators','Direct exclusion from each operator found in his transactions','Gambling blocks switched on at each bank','Unlicensed sites blocked by the card and a device blocker'],see:['Self-exclusion active: yes/no','Each exclusion and its status']},
+ card:{h:'Toivo card and sponsor',p:'A Toivo spending card (being built on Stripe) blocks gambling merchants everywhere. A sponsor, someone Daniel trusts, helps him oversee his money: they set a monthly limit and restrictions, are told if a gambling payment is attempted, and can freeze the card instantly if anything looks suspicious.',li:['Gambling is always blocked; nobody can switch it off','Sponsor sees spending summaries, not therapy','Restrictions can ease as trust is rebuilt'],see:['Card active, sponsor in place','Card status and blocked attempts']},
+ progress:{h:'30 days of tracked progress',p:'Every workstream is logged as it happens: exclusions stay verified, sessions are attended, training is done daily, lessons are completed and open banking confirms each gambling-free day. Try the training game and a lesson.',li:['Shown here at day 12 of 30','Blocked gambling attempts alert the sponsor and therapist','Daniel sees the same evidence his lender and therapist rely on'],see:['Progress by workstream','Every session, exercise and check-in']},
+ complete:{h:'Completion and return to the lender',p:'When the criteria are met and the therapist signs off, GaimControl confirms the intervention is complete and sends Daniel back to Northbank with a completion certificate. He chooses to reapply now or ask for a call back.',li:['Criteria shown are a draft for discussion','His blocks stay on, and tracking can continue with his consent','Northbank makes the lending decision'],see:['Completion certificate and his request','Sign-off and final report']}
+};
+const STIM={
+ circle:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="34" fill="#22D8B3"/></svg>',
+ square:'<svg viewBox="0 0 100 100"><rect x="17" y="17" width="66" height="66" rx="12" fill="#5AA9FF"/></svg>',
+ tri:'<svg viewBox="0 0 100 100"><path d="M50 14 L88 82 H12 Z" fill="#9BE38D"/></svg>',
+ dice:'<svg viewBox="0 0 100 100"><rect x="16" y="16" width="68" height="68" rx="14" fill="#F4F6FB"/><circle cx="34" cy="34" r="7" fill="#0E0B26"/><circle cx="50" cy="50" r="7" fill="#0E0B26"/><circle cx="66" cy="66" r="7" fill="#0E0B26"/></svg>',
+ card:'<svg viewBox="0 0 100 100"><rect x="24" y="10" width="52" height="80" rx="8" fill="#F4F6FB"/><text x="50" y="63" text-anchor="middle" font-size="36" font-weight="800" font-family="Georgia,serif" fill="#D93A3A">A</text></svg>',
+ slot:'<svg viewBox="0 0 100 100"><rect x="8" y="26" width="84" height="48" rx="10" fill="#FBC21B"/><text x="50" y="62" text-anchor="middle" font-size="28" font-weight="800" font-family="Arial,sans-serif" fill="#0E0B26">777</text></svg>'
+};
+const ICON={
+ home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+ train:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>',
+ learn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-5a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h5z"/></svg>',
+ card:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>'
+};
+const AGENTS=[
+ {k:'GAMSTOP registration',d:'Covers all UK-licensed online operators',r:'Registered for 5 years'},
+ {k:'SpinCity',d:'Found in Harbour Bank transactions',r:'Account closed and excluded'},
+ {k:'BetNorth',d:'Found in Harbour Bank transactions',r:'Excluded, marketing stopped'},
+ {k:'LuckyRiver Casino',d:'Found in Crown & Mercer card',r:'Excluded'},
+ {k:'QuickOdds',d:'Found in Harbour Bank transactions',r:'Excluded'},
+ {k:'Royal Reels',d:'Unlicensed, not covered by GAMSTOP',r:'Blocked by card and device',flag:true},
+ {k:'Bank gambling blocks',d:'Harbour Bank and Crown & Mercer',r:'On for both accounts'},
+ {k:'Device blocker',d:'Daniel’s phone and laptop',r:'Installed and active'}
+];
+const S={step:0, sub:0, consents:[true,true,true], dataConsents:[true,true], authorise:true, agentsDone:0, tab:'home', lessonDone:false, gameRes:null, quiz:null, choice:'reapply', toast:null};
+let timers=[]; function clearTimers(){ timers.forEach(t=>clearTimeout(t)); timers=[]; stopGame(); }
+function later(fn,ms){ timers.push(setTimeout(fn,ms)); }
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function pill(c,t){return `<span class="pill ${c}">${t}</span>`;}
+function bar(p){return `<div class="bar"><i style="width:${Math.max(0,Math.min(100,p))}%"></i></div>`;}
+function brand(){return `<div class="toivo">${LOGO}Toivo</div>`;}
+
+/* ---------- screens ---------- */
+const SCREENS={
+ email(){
+  return `<div class="ph-h" style="font-size:20px">Inbox</div>
+  <div class="pcard" style="display:grid;gap:12px">
+   <div style="display:flex;gap:10px;align-items:center"><span style="width:38px;height:38px;border-radius:50%;background:var(--gold);color:#1A1400;display:grid;place-items:center;font-weight:800">N</span><div><b>Northbank Credit Union</b><div class="ph-p" style="font-size:12px">to Daniel · 09:41</div></div></div>
+   <b style="font-size:16px">Your loan application: one step to go</b>
+   <div class="ph-p" style="color:var(--text);display:grid;gap:10px">
+    <p>Hi Daniel,</p>
+    <p>Thanks for applying for a £3,000 loan. <b>We’d like to lend to you.</b> Before we finalise it, we ask members in your situation to complete a free 30-day programme with our partner GaimControl, using the Toivo app.</p>
+    <p>It’s confidential. We’ll only see whether you’re making progress, never the details.</p>
+    <p>When you’ve finished, you can come straight back to us. Your application stays open.</p>
+    <p class="ph-p">Northbank Lending Team · Ref NB-48213</p>
+   </div>
+   <button class="btn primary block" data-act="next">Start the programme</button>
+  </div>`;
+ },
+ consent(){
+  const c=(i,t,s)=>`<button class="consent" role="checkbox" aria-checked="${S.consents[i]}" data-act="cons:${i}"><span class="bx">${S.consents[i]?'✓':''}</span><span><b>${t}</b><span class="s">${s}</span></span></button>`;
+  return `${brand()}<div><div class="ph-h">Stay in control</div><p class="ph-p" style="margin-top:4px">Northbank referred you to GaimControl. Let’s set up your account.</p></div>
+  <div class="pcard" style="display:grid;gap:10px">
+   <div class="field"><label for="f-n">Full name</label><input id="f-n" value="Daniel Price"></div>
+   <div class="field"><label for="f-p">Phone number</label><input id="f-p" value="07700 900 482"></div>
+   <div class="field"><label for="f-e">Email</label><input id="f-e" value="daniel.price@example.com"></div>
+  </div>
+  <div class="pcard"><div class="lbl" style="margin-bottom:4px">I agree to</div>
+   ${c(0,'GaimControl receiving my referral','From Northbank, including my application reference')}
+   ${c(1,'Sharing my progress with Northbank','Milestones only. Never my transactions, sessions or notes.')}
+   ${c(2,'Sharing my activity with my therapist','So my support is tailored to me')}
+  </div>
+  <button class="btn primary block" data-act="next" ${S.consents.every(Boolean)?'':'disabled'}>Agree and create account</button>`;
+ },
+ idv(){
+  const ID=`<svg viewBox="0 0 190 150"><rect x="20" y="30" width="130" height="86" rx="10" fill="#2A2464" stroke="#A592FF" stroke-width="2"/><rect x="20" y="30" width="130" height="20" rx="10" fill="#7B61FF"/><text x="85" y="45" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Arial">GET VERIFIED</text><circle cx="50" cy="80" r="16" fill="#F3C8A8"/><rect x="74" y="66" width="56" height="6" rx="3" fill="#463D8C"/><rect x="74" y="80" width="44" height="6" rx="3" fill="#463D8C"/><rect x="74" y="94" width="50" height="6" rx="3" fill="#463D8C"/><path d="M150 70 l22 8 v16 c0 14-10 22-22 26 c-12-4-22-12-22-26 v-16z" fill="#FBC21B"/><path d="M140 94 l7 7 l13-14" stroke="#1A1400" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+  const FACE=`<svg viewBox="0 0 190 150"><rect x="45" y="8" width="100" height="134" rx="18" fill="#15113A" stroke="#463D8C" stroke-width="2"/><circle cx="95" cy="62" r="24" fill="none" stroke="#A592FF" stroke-width="3"/><path d="M58 128 c6-24 24-32 37-32 s31 8 37 32" fill="none" stroke="#A592FF" stroke-width="3"/><path d="M52 20 h14 M52 20 v14 M138 20 h-14 M138 20 v14 M52 130 h14 M52 130 v-14 M138 130 h-14 M138 130 v-14" stroke="#fff" stroke-width="3"/></svg>`;
+  if(S.sub===0) return `${brand()}<div class="ill">${ID}</div><div class="dots"><i class="on"></i><i></i><i></i></div><div class="center"><div class="ph-h">Get verified</div><p class="ph-p" style="margin-top:6px">We need to check your identity before we connect your accounts. Use a driving licence, passport or national ID.</p></div><button class="btn primary block" data-act="sub:1">Scan my document</button>`;
+  if(S.sub===1) return `${brand()}<div class="ill">${FACE}</div><div class="dots"><i></i><i class="on"></i><i></i></div><div class="center"><div class="ph-h">Identity check</div><p class="ph-p" style="margin-top:6px">Document scanned. Now a quick selfie to confirm it’s you. Centre your face in the frame.</p></div><button class="btn primary block" data-act="sub:2">Take selfie</button>`;
+  return `${brand()}<div class="ill"><svg viewBox="0 0 190 150"><circle cx="95" cy="75" r="50" fill="rgba(61,220,151,.15)"/><circle cx="95" cy="75" r="34" fill="#3DDC97"/><path d="M78 76 l11 11 l22-24" stroke="#06261A" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dots"><i></i><i></i><i class="on"></i></div><div class="center"><div class="ph-h">You’re verified</div><p class="ph-p" style="margin-top:6px">Thanks, Daniel. Your identity is confirmed.</p></div><button class="btn primary block" data-act="next">Continue</button>`;
+ },
+ journey(){
+  return `${brand()}<div><div class="ph-h">Your 30-day programme</div><p class="ph-p" style="margin-top:4px">Four things working together. We track each one so Northbank can see you’ve completed it.</p></div>
+  <div class="pcard">
+   <div class="ws"><span class="ic" style="background:var(--gold)">1</span><div><b>Self-exclusion, done for you</b><span>Our agents block gambling sites, apps and payments in your name, then check each one is active.</span></div></div>
+   <div class="ws"><span class="ic" style="background:var(--brand-2)">2</span><div><b>Your therapist</b><span>Weekly sessions with a specialist gambling therapist, by video or phone.</span></div></div>
+   <div class="ws"><span class="ic" style="background:var(--teal)">3</span><div><b>Your digital prescription</b><span>About 10 minutes a day: brain training games that strengthen impulse control, plus short CBT lessons.</span></div></div>
+   <div class="ws"><span class="ic" style="background:#5AA9FF">4</span><div><b>Toivo card and sponsor</b><span>A spending card that blocks gambling, with a trusted person who helps you oversee your money.</span></div></div>
+  </div>
+  <div class="pcard ph-p"><b style="color:var(--text)">At the end:</b> once you’ve completed the programme, we confirm it with Northbank and you go back to finish your loan.</div>
+  <button class="btn primary block" data-act="next">Let’s start</button>`;
+ },
+ data(){
+  if(S.sub===0){
+   const c=(i,t,s)=>`<button class="consent" role="checkbox" aria-checked="${S.dataConsents[i]}" data-act="dcons:${i}"><span class="bx">${S.dataConsents[i]?'✓':''}</span><span><b>${t}</b><span class="s">${s}</span></span></button>`;
+   return `${brand()}<div><div class="ph-h">Find your accounts</div><p class="ph-p" style="margin-top:4px">To protect you everywhere, we need to see every account in your name and where gambling payments go.</p></div>
+   <div class="pcard">${c(0,'Soft credit check','Finds all your accounts and cards. Doesn’t affect your credit score.')}${c(1,'Open banking','Read-only access to 90 days of transactions, and daily checks for the next 30 days. We can’t move money.')}</div>
+   <button class="btn primary block" data-act="sub:1" ${S.dataConsents.every(Boolean)?'':'disabled'}>I consent</button>`;
+  }
+  if(S.sub===1){
+   const a=(c,n,t,l)=>`<div class="acct"><i style="background:${c}">${n[0]}</i><div><b>${n}</b><span>${t} · ${l}</span></div><span class="r">${pill('p-ok','Found')}</span></div>`;
+   return `${brand()}<div><div class="ph-h">Accounts</div><p class="ph-p" style="margin-top:4px">Your credit check found these accounts in your name.</p></div>
+   ${a('#5AA9FF','Harbour Bank','Current account','••3381')}${a('#F2A7C3','Crown & Mercer','Credit card','••0917')}${a('#9BE38D','Fleet Building Society','Savings','••4410')}${a('#FBC21B','Northbank Credit Union','Savings','••1208')}
+   <button class="btn primary block" data-act="obconnect">Yes, connect these</button><button class="btn ghost block" data-act="toast:In the live app you can add or remove accounts here.">These aren’t right</button>`;
+  }
+  if(S.sub===2) return `<div class="spinner" role="status" aria-label="Analysing"></div><div class="ph-h center" style="font-size:19px">Reading 90 days</div><p class="ph-p center">Looking for gambling payments across 4 accounts…</p>`;
+  return `${brand()}<div><div class="ph-h">What we found</div><p class="ph-p" style="margin-top:4px">Private to you and your therapist. Northbank doesn’t see this.</p></div>
+  <div class="stat2"><div class="pcard"><div class="m">Gambling, last 90 days</div><div class="v">£1,870</div></div><div class="pcard"><div class="m">Of your income</div><div class="v">29%</div></div><div class="pcard"><div class="m">Payments</div><div class="v">63</div></div><div class="pcard"><div class="m">After 10pm</div><div class="v">71%</div></div></div>
+  <div class="pcard"><div class="lbl" style="margin-bottom:6px">Gambling operators found · 5</div>
+   <div class="op"><span>SpinCity</span>${pill('p-muted','Licensed')}</div><div class="op"><span>BetNorth</span>${pill('p-muted','Licensed')}</div><div class="op"><span>LuckyRiver Casino</span>${pill('p-muted','Licensed')}</div><div class="op"><span>QuickOdds</span>${pill('p-muted','Licensed')}</div><div class="op"><span>Royal Reels</span>${pill('p-warn','Unlicensed')}</div>
+  </div>
+  <p class="ph-p">Next, our agents will exclude you from every one of these.</p>
+  <button class="btn primary block" data-act="next">Continue</button>`;
+ },
+ exclusion(){
+  if(S.sub===0) return `${brand()}<div><div class="ph-h">Let us block gambling for you</div><p class="ph-p" style="margin-top:4px">Our agents will request self-exclusion in your name from every operator we found, set up GAMSTOP, switch on bank blocks and protect your devices.</p></div>
+  <div class="pcard"><button class="consent" role="checkbox" aria-checked="${S.authorise}" data-act="auth"><span class="bx">${S.authorise?'✓':''}</span><span><b>I authorise GaimControl to act for me</b><span class="s">To request self-exclusion for 5 years from the operators listed, register me with GAMSTOP and set gambling blocks on my accounts.</span></span></button></div>
+  <div class="pcard ph-p" style="font-size:12.5px">Self-exclusion can’t be reversed early. That’s what makes it work.</div>
+  <button class="btn primary block" data-act="agents" ${S.authorise?'':'disabled'}>Start agents</button>`;
+  const rows=AGENTS.map((a,i)=>{const st=i<S.agentsDone?(a.flag?'flag':'done'):(i===S.agentsDone?'run':'');return `<div class="agent ${st}"><span class="st">${st==='done'?'✓':st==='flag'?'!':''}</span><div><b>${a.k}</b><span>${st==='done'||st==='flag'?a.r:a.d}</span></div>${st==='done'?pill('p-ok','Verified'):st==='flag'?pill('p-warn','Blocked'):st==='run'?pill('p-brand','Working'):pill('p-muted','Queued')}</div>`;}).join('');
+  const fin=S.agentsDone>=AGENTS.length;
+  return `${brand()}<div><div class="ph-h">${fin?'You’re protected':'Agents at work'}</div><p class="ph-p" style="margin-top:4px">${fin?'Every exclusion is in place and verified. We’ll keep checking they stay active.':'This usually takes a few hours. We’ll notify you as each one is confirmed.'}</p></div>
+  <div class="pcard">${rows}</div>
+  ${fin?'<button class="btn primary block" data-act="next">Continue</button>':''}`;
+ },
+ card(){
+  const CARD=`<div class="tcard"><div class="row"><span class="toivo" style="font-size:16px">${LOGO}Toivo</span><small>Debit</small></div><div class="no">•••• •••• •••• 4821</div><div class="row"><div><small>Card holder</small><div class="nm">Daniel Price</div></div><div style="text-align:right"><small>Gambling</small><div class="nm">Blocked</div></div></div></div>`;
+  if(S.sub===0) return `${brand()}<div class="ph-h">Your Toivo card</div>${CARD}
+  <div class="pcard ph-p" style="display:grid;gap:6px;color:var(--text)"><div>✓ Gambling merchants are blocked, always</div><div>✓ Get your pay into Toivo and spend as normal</div><div>✓ Bills and creditor payments go out first</div></div>
+  <p class="ph-p">Next, choose a sponsor: someone you trust to help you oversee your money.</p><button class="btn primary block" data-act="sub:1">Add my sponsor</button>`;
+  if(S.sub===1) return `<button class="back" data-act="sub:0">← Back</button><div><div class="ph-h">Add a trusted person</div><p class="ph-p" style="margin-top:4px">A partner, family member or friend who’ll support you.</p></div>
+  <div class="pcard" style="display:grid;gap:10px"><div class="field"><label for="s-n">Name</label><input id="s-n" value="Laura Price"></div><div class="field"><label for="s-r">Relationship</label><input id="s-r" value="Partner"></div><div class="field"><label for="s-e">Mobile</label><input id="s-e" value="07700 900 615"></div></div>
+  <div class="pcard"><div class="lbl" style="margin-bottom:6px">Laura will be able to</div><div class="ph-p" style="display:grid;gap:5px;color:var(--text)"><div>✓ See your weekly spending summary</div><div>✓ Set your monthly limit and restrictions</div><div>✓ Get an alert if a gambling payment is tried</div><div>✓ Freeze the card straight away if anything looks suspicious</div></div><div class="lbl" style="margin:12px 0 6px">Laura won’t be able to</div><div class="ph-p" style="display:grid;gap:5px"><div>✕ See your therapy or lessons</div><div>✕ Move or spend your money</div></div></div>
+  <button class="btn primary block" data-act="sub:2">Send invite to Laura</button>`;
+  return `${brand()}<div style="display:flex;gap:10px;align-items:center"><span style="width:40px;height:40px;border-radius:50%;background:#F2A7C3;color:#0E0B26;display:grid;place-items:center;font-weight:800">LP</span><div><b>Laura accepted</b><div class="ph-p" style="font-size:12.5px">She has set up your card controls</div></div></div>
+  <div class="pcard"><div class="lbl">Monthly spending limit</div><div style="display:flex;justify-content:space-between;align-items:baseline;margin:6px 0"><b style="font-size:24px" class="num">£400</b><span class="ph-p" style="font-size:12px">after bills</span></div>${bar(40)}</div>
+  <div class="pcard"><div class="lbl" style="margin-bottom:4px">Card restrictions</div>
+   <div class="ctl"><span>Gambling</span><span style="display:flex;gap:8px;align-items:center">${pill('p-bad','Always blocked')}<span class="sw lock"></span></span></div>
+   <div class="ctl"><span>Cash withdrawals</span><span class="sw"></span></div>
+   <div class="ctl"><span>Crypto exchanges</span><span class="sw"></span></div>
+   <div class="ctl"><span>Buy now, pay later</span><span class="sw"></span></div>
+   <div class="ctl"><span>Online shopping</span><span class="sw on"></span></div>
+   <div class="ctl"><span>Contactless</span><span class="sw on"></span></div>
+  </div>
+  <div class="pcard" style="display:flex;gap:12px;align-items:center"><span style="width:34px;height:34px;border-radius:10px;background:rgba(255,107,129,.18);color:var(--bad);display:grid;place-items:center;font-weight:800;flex:none">!</span><div><b style="font-size:13.5px">Laura can freeze your card</b><div class="ph-p" style="font-size:12px">Instantly, from her phone, if anything looks suspicious. You’ll both be told.</div></div></div>
+  <p class="ph-p" style="font-size:12.5px">Restrictions can ease as you progress, with Laura’s agreement.</p>
+  <button class="btn primary block" data-act="next">My card is ready</button>`;
+ },
+ progress(){
+  if(S.tab==='game') return gameScreen();
+  if(S.tab==='learn') return lessonScreen();
+  if(S.tab==='card') return cardScreen();
+  const C=2*Math.PI*54, pct=12/30;
+  const w=(t,v,p,s)=>`<div class="wrow"><div class="h"><b>${t}</b><span>${v}</span></div>${bar(p)}${s?`<span class="ph-p" style="font-size:11.5px">${s}</span>`:''}</div>`;
+  const tk=(done,t,s,act)=>`<button class="task ${done?'done':''}" data-act="${act}"><span class="bx">${done?'✓':''}</span><span><b>${t}</b><span>${s}</span></span><span class="go">›</span></button>`;
+  return `<div style="display:flex;justify-content:space-between;align-items:center"><div><div class="ph-p" style="font-size:12px">Day 12 of 30</div><div class="ph-h" style="font-size:21px">Hi, Daniel</div></div>${pill('p-brand','On track')}</div>
+  <div class="pcard ring"><svg viewBox="0 0 132 132" aria-hidden="true"><circle cx="66" cy="66" r="54" fill="none" stroke="#2A2464" stroke-width="11"/><circle cx="66" cy="66" r="54" fill="none" stroke="#3DDC97" stroke-width="11" stroke-linecap="round" stroke-dasharray="${(C*pct).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 66 66)"/></svg><div class="in"><b>12</b><span>gambling-free days</span></div></div>
+  <p class="ph-p center" style="margin-top:-6px;font-size:12px">Verified daily by open banking</p>
+  <div class="lbl">Today’s prescription</div>
+  ${tk(!!S.gameRes,'Impulse control training','Go/No-Go · 2 min','tab:game')}
+  ${tk(S.lessonDone,'Lesson 5: Chasing losses','CBT · 6 min','tab:learn')}
+  ${tk(false,'Urge check-in','10pm reminder set','toast:Check-ins capture urge strength and trigger, and go to your therapist.')}
+  <div class="pcard"><div class="lbl" style="margin-bottom:2px">Your programme</div>
+   ${w('Self-exclusion','8 of 8 active',100,'All verified this morning')}
+   ${w('Therapy sessions','2 of 4',50,'Next: Thu 15 Oct, 18:30 with Dr Okafor')}
+   ${w('Brain training',(S.gameRes?12:11)+' of 12 days',(S.gameRes?100:92))}
+   ${w('CBT lessons',(S.lessonDone?5:4)+' of 12',(S.lessonDone?5:4)/12*100)}
+   ${w('Toivo card','Sponsor: Laura',100,'1 gambling payment blocked this week')}
+  </div>
+  <div class="pcard"><div class="lbl" style="margin-bottom:2px">Recent card activity</div>
+   <div class="tx"><i style="background:rgba(255,107,129,.2);color:var(--bad)">R</i><div><b>Royal Reels</b><div class="ph-p" style="font-size:11.5px">Sat 23:41 · Blocked · Laura notified</div></div><span class="a" style="color:var(--bad)">£50.00</span></div>
+   <div class="tx"><i>T</i><div><b>Tesco</b><div class="ph-p" style="font-size:11.5px">Sat 11:02</div></div><span class="a">−£42.18</span></div>
+   <div class="tx"><i>C</i><div><b>Creditor payment</b><div class="ph-p" style="font-size:11.5px">Fri · Scheduled</div></div><span class="a">−£145.00</span></div>
+  </div>
+  <button class="btn block" data-act="next">Skip to day 30</button>`;
+ },
+ complete(){
+  if(S.sub===0) return `${brand()}<div class="center"><div class="ill"><svg viewBox="0 0 190 150"><circle cx="95" cy="75" r="56" fill="rgba(251,194,27,.14)"/><circle cx="95" cy="75" r="38" fill="#FBC21B"/><path d="M76 76 l13 13 l25-27" stroke="#1A1400" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ph-h">You did it, Daniel</div><p class="ph-p" style="margin-top:6px">You’ve completed your 30-day programme. Dr Okafor signed off today.</p></div>
+  <div class="pcard"><div class="lbl" style="margin-bottom:4px">What you completed</div>
+   <div class="crit"><i>✓</i><div>Self-exclusion<span>8 of 8 verified, still active</span></div></div>
+   <div class="crit"><i>✓</i><div>30 gambling-free days<span>Confirmed by open banking and your card</span></div></div>
+   <div class="crit"><i>✓</i><div>4 of 4 therapy sessions<span>With Dr Sarah Okafor</span></div></div>
+   <div class="crit"><i>✓</i><div>Brain training on 27 of 30 days<span>Impulse control up from 68% to 91%</span></div></div>
+   <div class="crit"><i>✓</i><div>12 of 12 CBT lessons</div></div>
+   <div class="crit"><i>✓</i><div>Toivo card with sponsor<span>Laura Price</span></div></div>
+  </div>
+  <button class="btn primary block" data-act="sub:1">Go back to Northbank</button>`;
+  if(S.sub===1){
+   const o=(k,t,s)=>`<button class="opt" aria-pressed="${S.choice===k}" data-act="choice:${k}"><b>${t}</b><span>${s}</span></button>`;
+   return `<button class="back" data-act="sub:0">← Back</button><div><div class="ph-h">Back to Northbank</div><p class="ph-p" style="margin-top:4px">We’ll send your completion certificate with your request. How would you like to continue?</p></div>
+   ${o('reapply','Reapply now','Your £3,000 application (NB-48213) reopens with your certificate attached. Review and submit in 2 minutes.')}
+   ${o('call','Ask Northbank to call me','A lending officer calls you to talk it through.')}
+   ${S.choice==='call'?`<div class="pcard"><div class="lbl" style="margin-bottom:8px">Best time to call</div><div style="display:flex;gap:6px;flex-wrap:wrap">${['Tomorrow 10–12','Tomorrow 2–4','Thu 10–12'].map((t,i)=>`<span class="pill ${i===0?'p-brand':'p-muted'}" style="padding:7px 11px">${t}</span>`).join('')}</div></div>`:''}
+   <div class="pcard"><div class="ctl"><span><b style="display:block">Keep me protected</b><span class="ph-p" style="font-size:12px">Keep the card, blocks and monitoring for 12 months</span></span><span class="sw on"></span></div></div>
+   <button class="btn primary block" data-act="sub:2">${S.choice==='call'?'Request a call back':'Reopen my application'}</button>`;
+  }
+  return `${brand()}<div class="center"><div class="ill"><svg viewBox="0 0 190 150"><circle cx="95" cy="75" r="50" fill="rgba(61,220,151,.15)"/><circle cx="95" cy="75" r="34" fill="#3DDC97"/><path d="M78 76 l11 11 l22-24" stroke="#06261A" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ph-h">${S.choice==='call'?'Call back requested':'Application reopened'}</div><p class="ph-p" style="margin-top:6px">${S.choice==='call'?'Northbank will call you tomorrow between 10am and 12pm. They have your completion certificate.':'Northbank has your application and completion certificate. You’ll usually hear within 2 working days.'}</p></div>
+  <div class="pcard ph-p">Your blocks stay on and Toivo is still here for you. Your next check-in with Dr Okafor is in 4 weeks.</div>
+  <button class="btn block" data-act="restart">Restart the walkthrough</button>`;
+ }
+};
+function lessonScreen(){
+  const q=S.quiz;
+  return `<button class="back" data-act="tab:home">← Today</button><div class="lbl">Lesson 5 of 12 · 6 min</div><div class="ph-h">Chasing losses</div>
+  <div class="pcard ph-p" style="color:var(--text);display:grid;gap:10px"><p>After a loss, the brain treats getting the money back as urgent. That feeling isn’t a plan. It’s a signal.</p><p>Chasing usually turns one loss into several. The money is already gone; the next bet doesn’t change that.</p><p><b>Try this:</b> when the urge to win it back shows up, name it (“this is chasing”), wait 20 minutes and message Laura or open your urge surfing audio.</p></div>
+  <div class="pcard" style="display:grid;gap:8px"><b>Quick check: after a loss, the urge to win it back is…</b>
+   ${[['a','A sign my luck is about to turn'],['b','A normal feeling that passes if I wait'],['c','A good reason to bet a bit more']].map(([k,t])=>`<button class="opt" style="padding:10px 12px" aria-pressed="${q===k}" data-act="quiz:${k}"><span style="color:var(--text);font-size:13px">${t}</span></button>`).join('')}
+   ${q?`<p class="ph-p" style="font-size:12.5px;color:${q==='b'?'var(--ok)':'var(--warn)'}">${q==='b'?'Right. Urges peak and pass. Waiting is a skill you’re building.':'Not quite. The urge feels like a signal to act, but it passes if you wait.'}</p>`:''}
+  </div>
+  <button class="btn primary block" data-act="lessondone" ${q?'':'disabled'}>Complete lesson</button>`;
+}
+function cardScreen(){
+  return `<div class="ph-h">Toivo card</div><div class="stat2"><div class="pcard"><div class="m">Balance</div><div class="v">£182.40</div></div><div class="pcard"><div class="m">Left this month</div><div class="v">£214</div></div></div>
+  <div class="pcard"><div class="lbl" style="margin-bottom:4px">Controls set by Laura</div><div class="ctl"><span>Monthly limit</span><b>£400</b></div><div class="ctl"><span>Gambling</span>${pill('p-bad','Always blocked')}</div><div class="ctl"><span>Cash withdrawals</span>${pill('p-muted','Off')}</div><div class="ctl"><span>Crypto</span>${pill('p-muted','Off')}</div><div class="ctl"><span>Card freeze</span><span style="display:flex;gap:8px;align-items:center"><span class="ph-p" style="font-size:12px">Laura can freeze</span>${pill('p-ok','Active')}</span></div></div>
+  <div class="pcard"><div class="lbl" style="margin-bottom:4px">Blocked attempts</div><div class="tx"><i style="background:rgba(255,107,129,.2);color:var(--bad)">R</i><div><b>Royal Reels</b><div class="ph-p" style="font-size:11.5px">Sat 23:41 · Laura and Dr Okafor notified</div></div><span class="a" style="color:var(--bad)">£50.00</span></div></div>`;
+}
+
+/* ---------- game ---------- */
+let G=null;
+function gameScreen(){
+  if(G) return `<div class="ph-h" style="font-size:18px">Tap shapes. Hold back on cues.</div><div class="gprog"><i id="gprog" style="width:0%"></i></div><div class="gstage" id="gstage" role="button" tabindex="0" aria-label="Tap area"></div><p class="ph-p center">Tap the box, or press Space</p><button class="btn ghost" data-act="gamestop">Stop</button>`;
+  const r=S.gameRes;
+  if(r) return `<button class="back" data-act="tab:home">← Today</button><div class="ph-h">Nice work</div>
+   <div class="stat2"><div class="pcard"><div class="m">Accuracy</div><div class="v">${Math.round(r.acc*100)}%</div></div><div class="pcard"><div class="m">Reaction time</div><div class="v">${r.rt?r.rt+' ms':'—'}</div></div><div class="pcard"><div class="m">Held back on cues</div><div class="v">${r.cr}/6</div></div><div class="pcard"><div class="m">Missed shapes</div><div class="v">${r.miss}</div></div></div>
+   <p class="ph-p">Holding back when a gambling cue appears is the skill you’re training. Your scores go to Dr Okafor.</p>
+   <button class="btn primary block" data-act="gamestart">Play again</button><button class="btn block" data-act="tab:home">Back to today</button>`;
+  return `<button class="back" data-act="tab:home">← Today</button><div><div class="ph-h">Impulse control training</div><p class="ph-p" style="margin-top:4px">Tap as fast as you can when you see a shape. Don’t tap when you see a gambling cue.</p></div>
+  <div class="pcard"><div class="lbl" style="margin-bottom:8px">Tap these</div><div class="legend">${STIM.circle}${STIM.square}${STIM.tri}</div><div class="lbl" style="margin:12px 0 8px">Hold back on these</div><div class="legend">${STIM.dice}${STIM.card}${STIM.slot}</div></div>
+  <button class="btn primary block" data-act="gamestart">Start · 20 rounds</button>`;
+}
+function startGame(){
+  const go=['circle','square','tri'],ng=['dice','card','slot'],t=[];
+  for(let i=0;i<14;i++) t.push({k:go[i%3],go:true});
+  for(let i=0;i<6;i++) t.push({k:ng[i%3],go:false});
+  for(let i=t.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[t[i],t[j]]=[t[j],t[i]];}
+  G={t,i:-1,res:[],timer:null,shown:0,resp:false,on:false};
+  render(); G.timer=setTimeout(nextTrial,700);
+}
+const stage=()=>document.getElementById('gstage');
+function nextTrial(){
+  if(!G) return; G.i++;
+  const p=document.getElementById('gprog'); if(p) p.style.width=(G.i/G.t.length*100)+'%';
+  if(G.i>=G.t.length) return finishGame();
+  const el=stage(); if(!el) return stopGame();
+  el.className='gstage'; el.innerHTML=STIM[G.t[G.i].k]; G.shown=performance.now(); G.resp=false; G.on=true;
+  G.timer=setTimeout(endTrial,850);
+}
+function endTrial(){
+  if(!G) return; const tr=G.t[G.i];
+  if(!G.resp) G.res.push(tr.go?{t:'miss'}:{t:'cr'});
+  G.on=false; const el=stage(); if(el){el.innerHTML=''; setTimeout(()=>{ if(el) el.className='gstage'; },120);}
+  G.timer=setTimeout(nextTrial,380);
+}
+function respond(){
+  if(!G||!G.on||G.resp) return; G.resp=true; const tr=G.t[G.i], el=stage();
+  if(tr.go){G.res.push({t:'hit',rt:performance.now()-G.shown}); if(el) el.className='gstage hit';}
+  else {G.res.push({t:'fa'}); if(el) el.className='gstage err';}
+}
+function finishGame(){
+  const r=G.res, hits=r.filter(x=>x.t==='hit'), cr=r.filter(x=>x.t==='cr').length;
+  S.gameRes={acc:(hits.length+cr)/G.t.length, rt:hits.length?Math.round(hits.reduce((a,b)=>a+b.rt,0)/hits.length):0, cr, miss:r.filter(x=>x.t==='miss').length};
+  G=null; render();
+}
+function stopGame(){ if(G){clearTimeout(G.timer); G=null;} }
+
+/* ---------- render ---------- */
+function phoneNav(){
+  if(STEPS[S.step].id!=='progress') return '';
+  const b=(k,l,ic)=>`<button data-act="tab:${k}" aria-current="${S.tab===k}">${ICON[ic]}${l}</button>`;
+  return `<nav class="pnav">${b('home','Today','home')}${b('game','Train','train')}${b('learn','Learn','learn')}${b('card','Card','card')}</nav>`;
+}
+function render(){
+  const st=STEPS[S.step], n=NOTES[st.id];
+  const ps=document.getElementById('pscroll'), keep=ps?{k:render.k,t:ps.scrollTop}:null, key=st.id+S.sub+S.tab;
+  const steps=STEPS.map((x,i)=>`<li><button data-act="go:${i}" aria-current="${i===S.step}" class="${i<S.step?'done':''}"><span class="n">${i<S.step?'✓':i+1}</span><span>${x.t}<span class="d">${x.d}</span></span></button></li>`).join('');
+  document.getElementById('app').innerHTML=`
+  <div class="top"><span class="gc">Gaim<b>Control</b></span><span class="role">Member view · Toivo app</span><span class="demo">Demo · fictional data</span></div>
+  <div class="layout">
+   <ol class="steps" aria-label="Journey steps">${steps}</ol>
+   <div class="phone" aria-label="Daniel’s phone"><div class="screen"><div class="sbar"><span>${st.id==='email'?'09:41':'19:12'}</span><span>●●● 5G</span></div><div class="pscroll" id="pscroll">${SCREENS[st.id]()}</div>${phoneNav()}</div></div>
+   <div class="notes"><div class="ncard"><span class="eyebrow">Step ${S.step+1} of ${STEPS.length} · ${st.d}</span><h2>${n.h}</h2><p>${n.p}</p><ul>${n.li.map(x=>`<li>${x}</li>`).join('')}</ul>
+    <div class="sees"><span class="lbl" style="margin-bottom:4px">Who sees what</span><div><span>Lender</span><span>${n.see[0]}</span></div><div><span>Therapist</span><span>${n.see[1]}</span></div></div></div>
+    <div class="navrow"><button class="btn" data-act="prev" ${S.step===0?'disabled':''}>← Back</button><span class="pos">Use the phone, or step through here</span><button class="btn primary" data-act="next" ${S.step===STEPS.length-1?'disabled':''}>Next step →</button></div></div>
+  </div>
+  <footer>Demo with fictional people, organisations and figures. Operator and bank names are invented. Completion criteria are a draft for discussion.</footer>
+  ${S.toast?`<div class="toast" role="status">${esc(S.toast)}</div>`:''}`;
+  const np=document.getElementById('pscroll'); if(np && keep && keep.k===key) np.scrollTop=keep.t; else if(np) np.scrollTop=0;
+  render.k=key;
+}
+let tt=null; function toast(t){S.toast=t;render();clearTimeout(tt);tt=setTimeout(()=>{S.toast=null;render();},2800);}
+function goStep(i){ clearTimers(); S.step=Math.max(0,Math.min(STEPS.length-1,i)); S.sub=0; S.tab='home';
+  if(STEPS[S.step].id==='exclusion') S.agentsDone=0;
+  render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function act(a){
+  const [k,x]=a.split(/:(.*)/s);
+  switch(k){
+   case 'next': return goStep(S.step+1);
+   case 'prev': return goStep(S.step-1);
+   case 'go': return goStep(+x);
+   case 'restart': S.gameRes=null;S.lessonDone=false;S.quiz=null;S.choice='reapply'; return goStep(0);
+   case 'sub': clearTimers(); S.sub=+x; break;
+   case 'cons': S.consents[+x]=!S.consents[+x]; break;
+   case 'dcons': S.dataConsents[+x]=!S.dataConsents[+x]; break;
+   case 'auth': S.authorise=!S.authorise; break;
+   case 'obconnect': S.sub=2; render(); later(()=>{S.sub=3;render();},1600); return;
+   case 'agents': S.sub=1; S.agentsDone=0; render(); for(let i=1;i<=AGENTS.length;i++) later(()=>{S.agentsDone=i;render();},i*650); return;
+   case 'tab': stopGame(); S.tab=x; break;
+   case 'gamestart': S.gameRes=null; startGame(); return;
+   case 'gamestop': stopGame(); break;
+   case 'quiz': S.quiz=x; break;
+   case 'lessondone': S.lessonDone=true; S.tab='home'; toast('Lesson complete. Dr Okafor can see your progress.'); return;
+   case 'choice': S.choice=x; break;
+   case 'toast': return toast(x);
+  }
+  render();
+}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]'); if(!t) return; act(t.dataset.act);});
+document.addEventListener('pointerdown',e=>{ if(e.target.closest('#gstage')){ e.preventDefault(); respond(); } });
+document.addEventListener('keydown',e=>{ if(G&&(e.code==='Space'||e.key===' ')){e.preventDefault();respond();} });
+render();
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Northbank Lending Portal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: sticky step sidebar + one portal screen per step. Single dark GaimControl look: navy, gold accent for the lender, teal for progress. */
+:root{
+  color-scheme: dark;
+  --bg:#0A1430; --surface:#112048; --surface-2:#172957; --raise:#1E3268; --line:#25386B; --line-2:#334A82;
+  --text:#ECF1FB; --muted:#A6B2D0; --faint:#7787AD;
+  --accent:#FBC21B; --accent-ink:#1A1400; --teal:#22D8B3; --violet:#B3A7FF;
+  --ok:#3DDC97; --warn:#FFB454; --bad:#FF7272;
+  --font: Aptos, "Figtree", "Segoe UI", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.45}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{margin:0;text-wrap:balance;line-height:1.2}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+.side{background:#081128;border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:18px}
+.gc{font-weight:800;font-size:16px;padding:0 8px}
+.gc b{color:var(--accent)}
+.org{padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.org b{display:block}
+.org span{font-size:12px;color:var(--muted)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.steps button{width:100%;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:center;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:10px;color:var(--muted);font-weight:600}
+.steps button:hover{background:var(--surface)}
+.steps .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center;font-size:11.5px;font-weight:700}
+.steps button[aria-current="true"]{background:var(--surface-2);color:var(--text)}
+.steps button[aria-current="true"] .n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.steps button.done .n{border-color:var(--ok);color:var(--ok)}
+.side .foot{margin-top:auto;font-size:11.5px;color:var(--faint);padding:0 8px}
+.lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:700}
+main{padding:22px 28px 40px;min-width:0}
+.mh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.mh .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.mh h1{font-size:26px;margin-top:4px;letter-spacing:-.01em}
+.mh p{color:var(--muted);margin-top:6px;max-width:70ch}
+.navb{display:flex;gap:8px}
+.btn{border:1px solid var(--line-2);background:var(--surface-2);padding:8px 14px;border-radius:9px;font-weight:600;font-size:13px;white-space:nowrap}
+.btn:hover{background:var(--raise)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.teal{background:var(--teal);border-color:var(--teal);color:#032019}
+.btn.danger{background:transparent;border-color:rgba(255,114,114,.5);color:var(--bad)}
+.btn.ghost{background:transparent}
+.btn.lg{padding:12px 18px;font-size:14px;border-radius:11px}
+.grid{display:grid;gap:16px}
+.g2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;align-items:start}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.card h3{font-size:15px}
+.card .sub{color:var(--muted);font-size:13px;margin-top:3px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid transparent;white-space:nowrap}
+.p-ok{background:rgba(61,220,151,.13);color:var(--ok);border-color:rgba(61,220,151,.3)}
+.p-warn{background:rgba(255,180,84,.13);color:var(--warn);border-color:rgba(255,180,84,.3)}
+.p-bad{background:rgba(255,114,114,.13);color:var(--bad);border-color:rgba(255,114,114,.3)}
+.p-acc{background:rgba(251,194,27,.13);color:var(--accent);border-color:rgba(251,194,27,.35)}
+.p-teal{background:rgba(34,216,179,.12);color:var(--teal);border-color:rgba(34,216,179,.3)}
+.p-muted{background:var(--surface-2);color:var(--muted);border-color:var(--line-2)}
+.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.tile .v{font-size:24px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
+.tile .m{font-size:12px;color:var(--muted)}
+.bar{height:7px;border-radius:99px;background:var(--bg);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--teal)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:9px 16px;font-size:13px;margin:0}
+.kv dt{color:var(--faint)}
+.kv dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+tr.click{cursor:pointer}
+tr.click:hover td{background:rgba(255,255,255,.03)}
+tr.live td{background:rgba(251,194,27,.06)}
+.who{font-weight:700}
+.muted{color:var(--muted)}
+.faint{color:var(--faint)}
+.risk{border-color:rgba(255,114,114,.45);background:linear-gradient(180deg,rgba(255,114,114,.08),rgba(255,114,114,0) 60%),var(--surface)}
+.sig{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.sig div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.sig b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.sig span{font-size:12px;color:var(--muted)}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--faint);font-size:11px;font-family:var(--font)}
+.decide{display:grid;gap:10px}
+.dopt{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;text-align:left;border:1.5px solid var(--line);background:var(--surface-2);border-radius:12px;padding:14px;width:100%}
+.dopt b{font-size:14.5px}
+.dopt span{font-size:12.5px;color:var(--muted);grid-column:1/2}
+.dopt.rec{border-color:var(--accent);background:rgba(251,194,27,.07)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
+.check:first-of-type{border-top:0}
+.check input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.field{display:grid;gap:5px}
+.field label{font-size:12px;color:var(--muted);font-weight:600}
+.field select,.field input{background:var(--bg);border:1px solid var(--line-2);border-radius:9px;padding:9px 11px;color:var(--text);font:inherit}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:20px 1fr auto;gap:10px;padding:8px 0;position:relative}
+.tl li::before{content:"";position:absolute;left:8.5px;top:26px;bottom:-6px;width:1.5px;background:var(--line-2)}
+.tl li:last-child::before{display:none}
+.tl .c{width:18px;height:18px;border-radius:50%;background:var(--ok);color:#03241A;display:grid;place-items:center;font-size:10px;font-weight:800;position:relative;z-index:1}
+.tl .c.o{background:var(--surface);border:1.5px solid var(--line-2);color:var(--faint)}
+.tl .dt{font-size:12px;color:var(--faint);white-space:nowrap}
+.success{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:16px;border-radius:12px;background:rgba(61,220,151,.08);border:1px solid rgba(61,220,151,.35)}
+.success .ic{width:40px;height:40px;border-radius:50%;background:var(--ok);color:#03241A;display:grid;place-items:center;font-weight:800;flex:none}
+.funnel{display:grid;gap:9px}
+.funnel .r{display:grid;grid-template-columns:150px 1fr 40px;gap:12px;align-items:center;font-size:13px}
+.funnel .t{height:22px;border-radius:6px;background:var(--bg);overflow:hidden}
+.funnel .t i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#1A9CD8);border-radius:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line-2);background:transparent;border-radius:99px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--surface-2);color:var(--text);border-color:var(--accent)}
+.wsc{display:grid;gap:8px}
+.wsc .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.wsc .v{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.wsc .v small{font-size:13px;color:var(--muted);font-weight:600}
+.privacy{display:flex;gap:10px;background:var(--bg);border:1px dashed var(--line-2);border-radius:12px;padding:12px;color:var(--muted);font-size:12.5px}
+.notif{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.notif:first-child{border-top:0}
+.notif .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:var(--accent-ink)}
+.notif b{display:block}
+.notif span{font-size:12.5px;color:var(--muted)}
+.notif.sel{background:rgba(251,194,27,.05);margin:0 -18px;padding-inline:18px}
+.cert{border:1px solid rgba(251,194,27,.5);border-radius:14px;padding:22px;background:linear-gradient(180deg,rgba(251,194,27,.06),rgba(251,194,27,0) 40%),var(--surface)}
+.cert h3{font-size:20px}
+.crit{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
+.crit:first-child{border-top:0}
+.crit i{width:20px;height:20px;border-radius:50%;background:var(--ok);color:#03241A;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800}
+.crit .faint{font-size:12.5px}
+.sign{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.sign div{border-top:1px solid var(--line-2);padding-top:8px;font-size:12.5px;color:var(--muted)}
+.sign b{display:block;color:var(--text);font-size:13.5px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--raise);border:1px solid var(--line-2);padding:10px 16px;border-radius:12px;z-index:60;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:calc(100vw - 32px)}
+@media (max-width:1200px){ .tiles{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:980px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{min-width:0}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .steps{display:flex;overflow-x:auto;gap:4px}
+  .steps li{flex:none}
+  .steps button{white-space:nowrap}
+  .side .foot{display:none}
+  .g2,.g3{grid-template-columns:1fr!important}
+  .kv{grid-template-columns:auto 1fr!important}
+  .notif{grid-template-columns:40px minmax(0,1fr)}
+  .notif>:last-child{grid-column:2;justify-self:start}
+  .success .btn{margin-left:0!important}
+  td{white-space:normal}
+}
+@media (max-width:560px){
+  main{padding:18px 16px 32px}
+  .side{padding:16px}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sig{grid-template-columns:1fr 1fr}
+  .funnel .r{grid-template-columns:110px 1fr 32px}
+  .sign{grid-template-columns:1fr}
+}
+</style>
+
+</head><body style="margin:0"><a href="./" style="position:fixed;right:16px;bottom:16px;z-index:70;background:#1E3268;color:#ECF1FB;border:1px solid #334A82;border-radius:99px;padding:8px 14px;font:600 13px Aptos,Figtree,system-ui,sans-serif;text-decoration:none">All demos</a><div id="app"></div>
+
+<script>
+(function(){
+const STEPS=[
+ {t:'Gambling risk detected', h:'Gambling risk detected', p:'Daniel’s loan application shows signs of gambling harm. Instead of declining, Northbank can defer the decision and refer him to GaimControl.'},
+ {t:'Refer to GaimControl', h:'Refer to GaimControl', p:'One referral creates a case. GaimControl handles onboarding, protection, therapy and tracking. Daniel’s application stays open.'},
+ {t:'Portfolio tracking', h:'Portfolio tracking', p:'Every referred member in one view: where they are in the 30 days, who is on track and who needs attention. Click Daniel to drill down.'},
+ {t:'Member drill-down', h:'Daniel Price · case GC-1047', p:'Progress on each workstream that Daniel has agreed to share. Transactions, therapy notes and lesson content stay private.'},
+ {t:'Call back and completion', h:'Returning members', p:'When a member completes the programme, GaimControl sends them back with a completion certificate. They either reapply or ask for a call back.'}
+];
+const CASES=[
+ {n:'Daniel Price',id:'GC-1047',ref:'30 Sep',amt:'£3,000',day:12,stage:'In programme',st:['p-ok','On track'],f:'track',live:true},
+ {n:'Aaron Khan',id:'GC-1031',ref:'14 Sep',amt:'£1,500',day:28,stage:'In programme',st:['p-ok','On track'],f:'track'},
+ {n:'Mark Taylor',id:'GC-1036',ref:'21 Sep',amt:'£2,500',day:21,stage:'In programme',st:['p-bad','Gambling detected'],f:'att'},
+ {n:'Ciara Nolan',id:'GC-1040',ref:'27 Sep',amt:'£800',day:15,stage:'In programme',st:['p-warn','Missed session'],f:'att'},
+ {n:'Lee Walsh',id:'GC-1044',ref:'2 Oct',amt:'£600',day:10,stage:'In programme',st:['p-ok','On track'],f:'track'},
+ {n:'Tom Moore',id:'GC-1052',ref:'9 Oct',amt:'£2,000',day:3,stage:'Onboarding',st:['p-muted','Exclusions in progress'],f:'track'},
+ {n:'Sam Okoro',id:'GC-1055',ref:'11 Oct',amt:'£3,500',day:0,stage:'Invited',st:['p-warn','Not started'],f:'att'},
+ {n:'Priya Shah',id:'GC-1019',ref:'31 Aug',amt:'£4,000',day:30,stage:'Completed',st:['p-acc','Call back requested'],f:'done'},
+ {n:'Joanne Reid',id:'GC-1022',ref:'3 Sep',amt:'£1,000',day:30,stage:'Completed',st:['p-acc','Reapplied'],f:'done'},
+ {n:'Rachel Bell',id:'GC-1008',ref:'18 Aug',amt:'£1,500',day:30,stage:'Returned',st:['p-ok','Re-approved'],f:'done'}
+];
+const S={step:0, decision:null, refConsent:true, caseCreated:false, filter:'all', callBooked:false, sel:'dp', toast:null};
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function pill(c,t){return `<span class="pill ${c}">${t}</span>`;}
+function bar(p,c){return `<div class="bar"><i style="width:${Math.max(0,Math.min(100,p))}%;${c?'background:'+c:''}"></i></div>`;}
+function barChart(vals,o){
+  const W=520,H=150,L=36,R=8,T=10,B=24,n=vals.length,max=o.max;let s='';
+  [0,max/2,max].forEach(v=>{const y=T+(1-v/max)*(H-T-B);s+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="#25386B"/><text x="${L-6}" y="${y+4}" text-anchor="end">£${Math.round(v)}</text>`;});
+  const bw=(W-L-R)/n;
+  vals.forEach((v,i)=>{const h=v/max*(H-T-B);s+=`<rect x="${(L+i*bw+bw*.18).toFixed(1)}" y="${(H-B-h).toFixed(1)}" width="${(bw*.64).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${v>=190?'#FF7272':'#5A6FA8'}"/>`;});
+  s+=`<text x="${L}" y="${H-6}">13 weeks ago</text><text x="${W-R}" y="${H-6}" text-anchor="end">Last week</text>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label)}">${s}</svg>`;
+}
+
+/* ---------- screens ---------- */
+function s0(){
+  const wk=[95,120,80,160,210,140,190,230,110,175,150,90,120];
+  return `<div class="card" style="margin-bottom:16px"><div class="hd"><div><span class="lbl">Application NB-48213 · received 30 Sep</span><h3 style="font-size:19px;margin-top:4px">Daniel Price · £3,000 debt consolidation, 36 months</h3></div>${pill('p-warn','Decision needed')}</div>
+   <dl class="kv" style="grid-template-columns:repeat(4,auto 1fr)"><dt>Net income</dt><dd>£2,150/mo</dd><dt>Member since</dt><dd>2019</dd><dt>Credit score</dt><dd>Fair</dd><dt>Affordability</dt><dd style="color:var(--warn)">Marginal</dd></dl></div>
+  <div class="g2"><div class="card risk"><div class="hd"><div><span class="lbl" style="color:var(--bad)">GaimControl risk signal</span><h3 style="font-size:18px;margin-top:4px">High gambling risk detected</h3><p class="sub">From open banking data shared with the application</p></div>${pill('p-bad','High')}</div>
+    <div class="sig"><div><b>£1,870</b><span>gambled in 90 days</span></div><div><b>29%</b><span>of net income</span></div><div><b>63</b><span>payments to 5 operators</span></div><div><b>71%</b><span>between 10pm and 3am</span></div></div>
+    <div class="lbl" style="margin-bottom:6px">Weekly gambling spend</div>${barChart(wk,{max:250,label:'Weekly gambling spend, last 13 weeks'})}
+    <p class="faint" style="font-size:12px;margin-top:8px">Pattern: spending rises after payday and after losses (chasing). One unlicensed operator.</p></div>
+   <div class="card"><h3>Your decision</h3><p class="sub" style="margin-bottom:14px">Defer keeps Daniel’s application open while he completes the programme.</p>
+    <div class="decide">
+     <button class="dopt" data-act="decide:approve"><b>Approve</b><span>Lend now despite the gambling signal</span></button>
+     <button class="dopt" data-act="decide:decline"><b>Decline</b><span>Daniel leaves with no support. Often goes to high-cost or illegal lenders.</span></button>
+     <button class="dopt rec" data-act="decide:defer"><b>Defer and refer to GaimControl</b>${pill('p-acc','Recommended')}<span>“We’d like to lend to you, once you’ve completed the 30-day programme.”</span></button>
+    </div>
+    ${S.decision&&S.decision!=='defer'?`<p class="faint" style="font-size:12.5px;margin-top:10px">${S.decision==='approve'?'Approving ignores a high gambling signal. For this demo, choose Defer.':'A decline ends the relationship. For this demo, choose Defer.'}</p>`:''}
+   </div></div>`;
+}
+function s1(){
+  if(!S.caseCreated) return `<div class="g2"><div class="card"><div class="hd"><div><span class="lbl">Refer to GaimControl</span><h3 style="font-size:18px;margin-top:4px">Daniel Price · NB-48213</h3></div>${pill('p-acc','Deferred')}</div>
+   <dl class="kv" style="margin-bottom:14px"><dt>Reason</dt><dd>Gambling risk (high)</dd><dt>Loan held</dt><dd>£3,000, 36 months</dd><dt>Contact</dt><dd>daniel.price@example.com</dd></dl>
+   <label class="check"><input type="checkbox" id="c1" data-chk="refConsent" ${S.refConsent?'checked':''}><span>Daniel agreed to be referred. Recorded in today’s call.</span></label>
+   <label class="check"><input type="checkbox" id="c2" checked><span>Share the risk summary with GaimControl</span></label>
+   <label class="check"><input type="checkbox" id="c3" checked><span>Send Daniel the deferral email with his programme link</span></label>
+   <div class="field" style="margin:12px 0 16px;max-width:280px"><label for="lo">Lending officer</label><select id="lo"><option>Priya Lal</option><option>Mo Ahmed</option></select></div>
+   <button class="btn primary lg" data-act="create" ${S.refConsent?'':'disabled'}>Defer and create case</button></div>
+   <div class="card"><h3>What happens next</h3><ul class="tl" style="margin-top:12px">
+    <li><span class="c o">1</span><span>Daniel gets the deferral email and opens Toivo</span><span class="dt">Today</span></li>
+    <li><span class="c o">2</span><span>Consent, ID, credit check and open banking</span><span class="dt">Day 0</span></li>
+    <li><span class="c o">3</span><span>AI agents complete his self-exclusions</span><span class="dt">Day 0–1</span></li>
+    <li><span class="c o">4</span><span>Therapy, digital prescription, card and sponsor</span><span class="dt">Days 1–30</span></li>
+    <li><span class="c o">5</span><span>Completion certificate sent to you</span><span class="dt">Day 30</span></li></ul>
+    <p class="faint" style="font-size:12.5px;margin-top:10px">No extra work for your team until Daniel comes back.</p></div></div>`;
+  return `<div class="success" style="margin-bottom:16px"><span class="ic">✓</span><div><b>Case GC-1047 created</b><div class="muted" style="font-size:13px">Application NB-48213 deferred. Daniel’s email is on its way.</div></div><button class="btn primary" style="margin-left:auto" data-act="go:2">Go to portfolio</button></div>
+  <div class="g2"><div class="card"><h3>Case GC-1047</h3><dl class="kv" style="margin-top:12px"><dt>Member</dt><dd>Daniel Price</dd><dt>Application</dt><dd>NB-48213 · £3,000</dd><dt>Status</dt><dd>${pill('p-muted','Invited')}</dd><dt>Programme</dt><dd>30 days</dd><dt>Expected completion</dt><dd>30 Oct</dd><dt>Lending officer</dt><dd>Priya Lal</dd></dl></div>
+  <div class="card"><h3>Email sent to Daniel</h3><div class="privacy" style="margin-top:12px;display:block;color:var(--text)"><b>Your loan application: one step to go</b><p class="muted" style="margin-top:6px">Thanks for applying for a £3,000 loan. We’d like to lend to you. Before we finalise it, we ask members in your situation to complete a free 30-day programme with our partner GaimControl…</p><p style="margin-top:8px;color:var(--accent);font-weight:600">Start the programme →</p></div></div></div>`;
+}
+function s2(){
+  const rows=CASES.filter(c=>S.filter==='all'||c.f===S.filter).map(c=>`<tr class="${c.live?'live click':'click'}" data-act="${c.live?'go:3':'toast:Sample case. Open Daniel Price for the full drill-down.'}"><td><span class="who">${c.n}</span><div class="faint" style="font-size:12px">${c.id}</div></td><td class="muted">${c.ref}</td><td class="num">${c.amt}</td><td>${c.stage}</td><td style="min-width:140px"><div style="display:flex;justify-content:space-between;font-size:12px" class="muted"><span>Day ${c.day} of 30</span></div>${bar(c.day/30*100,c.f==='att'&&c.st[0]==='p-bad'?'var(--bad)':'')}</td><td>${pill(c.st[0],c.st[1])}</td><td class="faint">›</td></tr>`).join('');
+  const ch=(k,l)=>`<button class="chip" aria-pressed="${S.filter===k}" data-act="filter:${k}">${l}</button>`;
+  const fun=[['Referred',38],['Started',33],['Self-exclusion done',31],['Completed 30 days',11],['Returned to you',9],['Re-approved',7]];
+  return `<div class="tiles" style="margin-bottom:16px">
+   ${[['Referred this year','38','since January'],['Active now','19','in the 30 days'],['Completed','11','of 13 due to finish'],['Returned to you','9','6 reapplied, 3 call backs'],['Gambling-free','94%','of active days, verified'],['Re-approved','£18.5k','7 loans']].map(t=>`<div class="tile"><div class="lbl">${t[0]}</div><div class="v">${t[1]}</div><div class="m">${t[2]}</div></div>`).join('')}</div>
+  <div class="g2" style="grid-template-columns:minmax(0,2fr) minmax(0,1fr)">
+   <div class="card"><div class="hd"><div><h3>Referred members</h3><p class="sub">Click a member to see their progress</p></div><div class="chips">${ch('all','All')}${ch('track','On track')}${ch('att','Needs attention')}${ch('done','Completed')}</div></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Member</th><th>Referred</th><th>Loan</th><th>Stage</th><th>Progress</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>
+   <div class="card"><h3>Programme funnel</h3><p class="sub" style="margin-bottom:14px">All referrals this year</p><div class="funnel">${fun.map(f=>`<div class="r"><span>${f[0]}</span><span class="t"><i style="width:${f[1]/38*100}%"></i></span><b class="num">${f[1]}</b></div>`).join('')}</div>
+    <div class="privacy" style="margin-top:16px"><span>i</span><span>Alerts like “Gambling detected” come from open banking and card monitoring. GaimControl’s team follows up; you’re kept informed.</span></div></div></div>`;
+}
+function s3(){
+  const w=(t,v,of,p,s,c)=>`<div class="card wsc"><div class="top"><span class="lbl">${t}</span>${c||''}</div><div class="v">${v}<small>${of}</small></div>${bar(p)}<span class="faint" style="font-size:12px">${s}</span></div>`;
+  const tl=[['Deferred and referred','30 Sep',1],['Consent and ID verified','30 Sep',1],['Accounts connected (4)','30 Sep',1],['Self-exclusion: 8 of 8 verified','1 Oct',1],['Therapist assessment','1 Oct',1],['Toivo card active, sponsor in place','2 Oct',1],['Therapy session 2 attended','8 Oct',1],['Therapy session 3','15 Oct',0],['Programme completion','30 Oct',0]];
+  return `<div class="card" style="margin-bottom:16px"><div class="hd" style="margin-bottom:10px"><div><span class="lbl">Application NB-48213 · £3,000 · deferred 30 Sep</span><h3 style="font-size:19px;margin-top:4px">Day 12 of 30</h3></div>${pill('p-ok','On track')}</div>${bar(40)}<div style="display:flex;justify-content:space-between;margin-top:6px" class="faint"><span style="font-size:12px">30 Sep</span><span style="font-size:12px">Expected completion 30 Oct</span></div></div>
+  <div class="g3" style="margin-bottom:16px">
+   ${w('Gambling-free','12',' days',40,'Verified daily by open banking and card',pill('p-ok','Verified'))}
+   ${w('Self-exclusion','8',' of 8',100,'GAMSTOP, 4 operators, 2 bank blocks, device blocker',pill('p-ok','Active'))}
+   ${w('Therapy sessions','2',' of 4',50,'Next session Thu 15 Oct')}
+   ${w('Brain training','11',' of 12 days',92,'Digital prescription adherence')}
+   ${w('CBT curriculum','4',' of 12',33,'Lessons completed')}
+   ${w('Toivo card','Active','',100,'Sponsor in place, who can freeze the card',pill('p-ok','Sponsor'))}
+  </div>
+  <div class="g2"><div class="card"><h3>Timeline</h3><ul class="tl" style="margin-top:10px">${tl.map(x=>`<li><span class="c ${x[2]?'':'o'}">${x[2]?'✓':''}</span><span class="${x[2]?'':'muted'}">${x[0]}</span><span class="dt">${x[1]}</span></li>`).join('')}</ul></div>
+  <div class="grid"><div class="card"><h3>What you can and can’t see</h3><div class="privacy" style="margin-top:12px;border-style:solid"><span>🔒</span><span>Daniel shares progress on each workstream with you. His transactions, therapy notes, lesson content and sponsor’s activity stay private between him, his therapist and GaimControl.</span></div></div>
+  <div class="card"><h3>Jump ahead</h3><p class="sub" style="margin-bottom:12px">See what Northbank receives when Daniel completes the programme on day 30.</p><button class="btn primary" data-act="go:4">View completion →</button></div></div></div>`;
+}
+function s4(){
+  const n=(id,av,c,t,s,a)=>`<div class="notif ${S.sel===id?'sel':''}"><span class="av" style="background:${c}">${av}</span><div><b>${t}</b><span>${s}</span></div>${a}</div>`;
+  return `<div class="g2" style="grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)">
+   <div class="card"><div class="hd"><div><h3>Returning members</h3><p class="sub">Completed the programme · 30 Oct</p></div>${pill('p-acc','3 new')}</div>
+    ${n('dp','DP','var(--accent)','Daniel Price asked for a call back','Tomorrow 10am–12pm · 07700 900 482 · NB-48213',S.callBooked?pill('p-ok','Booked 10:30'):`<button class="btn primary" data-act="book">Schedule call</button>`)}
+    ${n('jr','JR','#5AA9FF','Joanne Reid reapplied','Application NB-47702 reopened with certificate',`<button class="btn" data-act="toast:Opens Joanne’s reopened application in your loan system.">Open application</button>`)}
+    ${n('ps','PS','#F2A7C3','Priya Shah asked for a call back','Thu 10am–12pm · NB-47561',`<button class="btn" data-act="toast:Sample request.">Schedule call</button>`)}
+    <div class="privacy" style="margin-top:6px"><span>i</span><span>Members choose to reapply online or ask for a call. Either way, the certificate arrives with the request.</span></div></div>
+   <div class="cert"><div class="hd"><div><span class="lbl" style="color:var(--accent)">GaimControl completion certificate</span><h3 style="margin-top:6px">Daniel Price completed the programme</h3><p class="sub">Case GC-1047 · 30 Sep to 30 Oct 2026 · Application NB-48213</p></div>${pill('p-ok','Complete')}</div>
+    <div>${[['Self-exclusion in place','8 of 8 verified, still active'],['30 consecutive gambling-free days','Open banking and card'],['Therapy','4 of 4 sessions attended'],['Digital prescription','Training on 27 of 30 days'],['CBT curriculum','12 of 12 lessons'],['Toivo card and sponsor','Active throughout']].map(c=>`<div class="crit"><i>✓</i><span>${c[0]}</span><span class="faint">${c[1]}</span></div>`).join('')}</div>
+    <div class="privacy" style="margin-top:14px"><span>i</span><span>Daniel has consented to 12 months of continued monitoring. You’ll be alerted if gambling payments reappear. The lending decision remains with Northbank.</span></div>
+    <div class="sign"><div><b>Dr Sarah Okafor</b>Specialist gambling therapist · signed 30 Oct</div><div><b>GaimControl</b>Intervention verified · 30 Oct</div></div>
+    <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap"><button class="btn primary" data-act="toast:Opens NB-48213 in your loan system with the certificate attached.">Reopen application NB-48213</button>${S.callBooked?'':`<button class="btn" data-act="book">Schedule Daniel’s call</button>`}</div></div></div>`;
+}
+const SCREENS=[s0,s1,s2,s3,s4];
+
+function render(){
+  const st=STEPS[S.step];
+  document.getElementById('app').innerHTML=`<div class="app">
+   <aside class="side"><div class="gc">Gaim<b>Control</b></div><div class="org"><b>Northbank Credit Union</b><span>Lending portal · Priya Lal</span></div>
+    <div><div class="lbl" style="padding:0 8px 6px">Walkthrough</div><ol class="steps">${STEPS.map((x,i)=>`<li><button data-act="go:${i}" aria-current="${i===S.step}" class="${i<S.step?'done':''}"><span class="n">${i<S.step?'✓':i+1}</span><span>${x.t}</span></button></li>`).join('')}</ol></div>
+    <div class="foot">Demo with fictional people, organisations and figures.</div></aside>
+   <main><div class="mh"><div><span class="eyebrow">Credit union view · Step ${S.step+1} of ${STEPS.length}</span><h1>${st.h}</h1><p>${st.p}</p></div>
+    <div class="navb"><button class="btn" data-act="go:${S.step-1}" ${S.step===0?'disabled':''}>← Back</button><button class="btn primary" data-act="go:${S.step+1}" ${S.step===STEPS.length-1?'disabled':''}>Next →</button></div></div>
+    ${SCREENS[S.step]()}</main></div>
+   ${S.toast?`<div class="toast" role="status">${esc(S.toast)}</div>`:''}`;
+}
+let tt=null; function toast(t){S.toast=t;render();clearTimeout(tt);tt=setTimeout(()=>{S.toast=null;render();},2800);}
+function act(a){
+  const [k,x]=a.split(/:(.*)/s);
+  switch(k){
+   case 'go': { const i=Math.max(0,Math.min(STEPS.length-1,+x)); if(i>=2) S.caseCreated=true; S.step=i; window.scrollTo({top:0,behavior:'smooth'}); break; }
+   case 'decide': S.decision=x; if(x==='defer'){ S.step=1; window.scrollTo({top:0}); } break;
+   case 'create': S.caseCreated=true; break;
+   case 'filter': S.filter=x; break;
+   case 'book': S.callBooked=true; toast('Call booked with Daniel: tomorrow 10:30. He’ll get a confirmation.'); return;
+   case 'toast': return toast(x);
+  }
+  render();
+}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]'); if(t) act(t.dataset.act);});
+document.addEventListener('change',e=>{ const k=e.target.dataset&&e.target.dataset.chk; if(k){ S[k]=e.target.checked; render(); } });
+render();
+})();
+</script>
+
+</body></html>
